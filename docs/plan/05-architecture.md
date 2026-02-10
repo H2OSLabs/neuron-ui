@@ -9,14 +9,17 @@
 > - [目标 3: 自动生成引擎](./03-goal-auto-page-generation.md) — API 解析 → 映射匹配 → Page Schema 生成
 > - [目标 4: 拖拉拽编辑器](./04-goal-drag-drop-refinement.md) — 编辑器界面和技术方案
 >
-> 新增包 `@neuron-ui/generator` 负责自动生成引擎，架构层级更新：
+> 新增包 `@neuron-ui/generator` 负责 AI 驱动的页面生成，架构层级更新：
 > ```
 > Layer 0: Design Tokens (@neuron-ui/tokens)
 > Layer 1: shadcn 原语 (src/ui/)
 > Layer 2: neuron 组件 (src/neuron/)
-> Layer 3: 自动生成引擎 (@neuron-ui/generator) + 拖拉拽编辑器 (@neuron-ui/page-builder)
-> 侧面支撑: 组件-接口映射规则 (@neuron-ui/metadata)
+> Layer 3: AI 页面生成 (@neuron-ui/generator) + 拖拉拽编辑器 (@neuron-ui/page-builder)
+> 侧面支撑: 组件-接口映射规则 (@neuron-ui/metadata) — 作为 AI 的参考指南
 > ```
+>
+> 重要变更：生成引擎由确定性解析器改为 AI 驱动，输入不再要求固定格式。
+> 用户可提供任意格式的 API 列表和 TaskCase，AI 理解内容后参考映射规则生成 Page Schema。
 
 ---
 
