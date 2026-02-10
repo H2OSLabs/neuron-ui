@@ -1,6 +1,22 @@
 # neuron-ui 前端组件架构设计
 
-> 基于 shadcn/ui 二次开发的 AI-first 组件库架构
+> 基于 shadcn/ui 二次开发的 API 驱动页面生成组件库架构
+>
+> 更新说明：本文件从 `04-architecture.md` 重命名而来。
+> Layer 0-2 (Token → shadcn → neuron 组件) 架构不变，仍然适用。
+> 新增的 Layer 3 架构（自动生成引擎 + 拖拉拽编辑器）详见：
+> - [目标 2: 组件-接口类型映射](./02-goal-component-api-mapping.md) — component-api-mapping.json
+> - [目标 3: 自动生成引擎](./03-goal-auto-page-generation.md) — API 解析 → 映射匹配 → Page Schema 生成
+> - [目标 4: 拖拉拽编辑器](./04-goal-drag-drop-refinement.md) — 编辑器界面和技术方案
+>
+> 新增包 `@neuron-ui/generator` 负责自动生成引擎，架构层级更新：
+> ```
+> Layer 0: Design Tokens (@neuron-ui/tokens)
+> Layer 1: shadcn 原语 (src/ui/)
+> Layer 2: neuron 组件 (src/neuron/)
+> Layer 3: 自动生成引擎 (@neuron-ui/generator) + 拖拉拽编辑器 (@neuron-ui/page-builder)
+> 侧面支撑: 组件-接口映射规则 (@neuron-ui/metadata)
+> ```
 
 ---
 

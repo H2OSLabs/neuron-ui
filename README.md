@@ -1,96 +1,120 @@
 # neuron-ui
 
-> AI-first 前端组件库 — 让 AI 能快速使用组件搭配出页面
+> API 驱动的前端页面自动生成组件库 — 从 API 列表和 TaskCase 自动生成可调整的页面
 
 ## 项目目标
 
-neuron-ui 是一个面向 AI 驱动开发的前端组件库。核心目标：
+neuron-ui 是一个基于 shadcn/ui 二次开发的组件库，核心能力是 **根据后端 API 列表和产品 TaskCase 自动生成前端页面**。
 
-1. **AI 可组装** — 组件接口标准化，AI Agent 可通过语义化 API 快速组合出完整页面
-2. **设计一致性** — 基于统一的设计 Token（色彩、字体、间距、圆角），确保任意组件组合后视觉协调
-3. **灵活可插拔** — 每个组件支持插入文本、图片、icon、tag、头像等内容，适配多种业务场景
+```
+后端 API 列表 ──┐
+                ├──► 自动生成引擎 ──► 拖拉拽编辑器 ──► 发布上线
+产品 TaskCase ──┘      (组件-接口映射)      (细节调整)
+```
+
+### 四大目标
+
+| # | 目标 | 说明 |
+|---|------|------|
+| 1 | **shadcn 二次开发** | 按暖灰色设计规范对 shadcn/ui 进行二次开发，产出 53 个组件 |
+| 2 | **组件-接口类型映射** | 定义每个组件适用于哪种接口类型（GET/POST/PUT/DELETE） |
+| 3 | **API+TaskCase 自动生成** | 后端给 API 列表 + 产品给 TaskCase → 自动匹配组件生成完整页面 |
+| 4 | **拖拉拽细节调整** | 在自动生成的页面基础上，可视化编辑器进行人工微调 |
+
+## 核心流程
+
+```
+1. 后端提供 Swagger/OpenAPI spec (API 列表)
+2. 产品提供 TaskCase (用户故事/用例)
+3. 系统解析 API → 识别资源、操作、字段
+4. 系统解析 TaskCase → 识别页面意图
+5. 映射引擎根据 API 类型自动匹配组件:
+   - GET  → DataTable, Card, Avatar, Badge (展示数据)
+   - POST → Dialog + Input, Textarea, Combobox (创建数据)
+   - PUT  → Sheet + 表单组件 (编辑数据)
+   - DELETE → Dialog 确认弹窗 (删除确认)
+6. 生成 Page Schema (组件树 + 数据绑定 + 默认属性)
+7. 运营在拖拉拽编辑器中微调细节
+8. 发布上线
+```
 
 ## 设计基础 (Design Tokens)
-
-所有组件共享同一套设计 Token，这是 AI 正确组装页面的基础。
 
 ### 色彩体系
 
 | 分类 | 色值 | 用途 |
 |------|------|------|
-| 灰阶 (Gray 01-14) | `#5F5D57` → `#FCFCFC` | 文字、边框、背景、禁用态等 14 级灰阶 |
-| 辅助色 (Accent) | Pink / Yellow / Lime / Green / Blue / Purple / Lavender | 标签、高亮、状态指示 |
-| 语义色 (Semantic) | Error `#E67853` / Warning `#E8A540` / Success `#6EC18E` | 错误、警告、成功反馈 |
+| 灰阶 (Gray 01-14) | `#5F5D57` → `#FCFCFC` | 文字、边框、背景、禁用态等 14 级暖灰 |
+| 辅助色 (Accent) | Pink / Yellow / Lime / Green / Blue / Purple / Lavender | 标签、状态指示 |
+| 语义色 (Semantic) | Error `#E67853` / Warning `#E8A540` / Success `#6EC18E` | 操作反馈 |
 
-### 字体体系
+### 字体 / 间距 / 圆角
 
-| 类型 | 字体 | 用途 |
-|------|------|------|
-| 英文主字体 | Asul | 标题 |
-| 中文字体 | Swei Gothic CJK SC (未来圆) | 正文 |
+- **字体**: Asul (英文标题) + Swei Gothic CJK SC (中文正文)
+- **字号**: `48` / `36` / `28` / `24` / `18` / `14` / `12` px
+- **间距**: `4` / `8` / `12` / `16` / `20` / `24` / `32` / `36` / `48` / `64` px
+- **圆角**: `4`(标签) / `8`(输入框) / `12`(卡片) / `20`(按钮) / `50%`(头像) px
 
-字号: `48px` / `36px` / `28px` / `24px` / `18px` / `14px` / `12px`
+## 组件清单与接口映射 (精选)
 
-### 间距体系
+> 完整 53 个组件的 API 映射见 [目标 2 文档](./docs/plan/02-goal-component-api-mapping.md)
 
-`4px` / `8px` / `12px` / `16px` / `20px` / `24px` / `32px` / `40px` / `48px` / `64px`
-
-### 圆角体系
-
-| 尺寸 | 用途 |
-|------|------|
-| 4px | 标签 / 徽章 |
-| 8px | 输入框 |
-| 12px | 卡片 / 面板 |
-| 20px | 按钮 |
-| 50% | 头像 / 药丸 |
-
-## 组件清单
-
-| 组件 | 说明 | 支持内容 |
-|------|------|----------|
-| **Dialog** | 弹窗，支持九宫格定位 | 卡片、文本、滚动内容 |
-| **Aspect Ratio** | 宽高比容器 (w:856px) | 卡片、组件、图片、文本、链接 |
-| **Avatar** | 头像（圆形/圆角方形） | 描边、在线状态、标签、尺寸变化 |
-| **Badge** | 标签 (h:16/24px, r:4px) | 自定义文字、颜色、尺寸 |
-| **Button** | 按钮（胶囊/圆形/异形） | 自定义文字、颜色、icon |
-| **Dropdown Menu** | 下拉菜单 | 纯文本、icon+文本、图片 |
-| **Calendar** | 日历 (w:328px, h:324px) | 日期标签、点击跳转、颜色变化 |
-| **Carousel** | 轮播 | 可调大小、间距、方向 |
-| **Checkbox** | 多选框 | 多种 Radio Group 组合 |
-| **Radio Group** | 单选组 | 文本、图片、头像、禁用/警告态 |
-| **Scroll Area** | 滚动区域 | 水平/纵向滚动，卡片/图片/icon/文字 |
-| **Combobox** | 组合框 | 单选/多选、搜索、分组、无效反馈 |
-| **Empty** | 空状态 | 文本、图片、icon、互动按钮 |
-| **Input Group** | 输入框组 | 文字/话题/tag 搜索、下拉、可调大小 |
-| **Input** | 输入框 (h:32px) | 话题/tag 创建、置灰、无效态、文件选择、表单 |
-| **Sheet** | 侧边抽屉 (w:396px) | 隐藏关闭按钮、可调尺寸 |
-| **Switch** | 开关 (h:18px, w:40px) | 不可点击态、组合、无效态、可调大小 |
-| **Textarea** | 文本域 (856x180px) | 标签、描述、禁用/无效态、卡片/按钮/文本 |
-| **Toast** | 提示 | 可点击文本、字体/颜色变化 |
-| **Toggle** | 切换 | 文本、颜色变化、大小变化 |
-| **Toggle Group** | 切换组 | 横向/纵向排列、icon/文字 |
-| **Resizable** | 响应式容器 | 自动收起/抽屉模式 (断点: 1440/1340/1288/928px) |
-| **Card** | 卡片（多变体） | 图片、tag、头像、文字、按钮、icon、日期 |
-| **Data Table** | 数据表格 | 排序/过滤、跳转、文本/头像/tag、切换、数据绑定 |
+| 角色 | 组件 | GET | POST | PUT | DELETE | 说明 |
+|------|------|:---:|:----:|:---:|:------:|------|
+| 展示 | **NDataTable** | ★ | — | — | — | 列表展示 + 分页 |
+| 展示 | **NCard** | ★ | — | — | — | 数据卡片 |
+| 展示 | **NChart** | ★ | — | — | — | 数据可视化 |
+| 展示 | **NAvatar** | ★ | — | — | — | 用户信息 |
+| 展示 | **NBadge** | ★ | — | — | — | 状态标签 |
+| 输入 | **NInput** | — | ★ | ★ | — | 文本输入 |
+| 输入 | **NTextarea** | — | ★ | ★ | — | 长文本输入 |
+| 输入 | **NCombobox** | 辅 | ★ | ★ | — | 下拉选择 |
+| 输入 | **NSelect** | 辅 | ★ | ★ | — | 简单下拉 |
+| 输入 | **NDatePicker** | — | ★ | ★ | — | 日期选择 |
+| 输入 | **NSwitch** | — | ★ | ★ | — | 布尔切换 |
+| 容器 | **NDialog** | — | ★ | ★ | ★ | 表单弹窗 / 删除确认 |
+| 容器 | **NAlertDialog** | — | — | — | ★ | 强制确认弹窗 |
+| 容器 | **NSheet** | — | ★ | ★ | — | 侧边编辑面板 |
+| 触发 | **NButton** | — | ★ | ★ | ★ | 操作触发 |
+| 反馈 | **NToast** | — | ★ | ★ | ★ | 操作反馈 |
+| 辅助 | **NEmpty** | ★ | — | — | — | 空数据状态 |
+| 辅助 | **NSkeleton** | ★ | — | — | — | 加载占位 |
 
 ## 项目结构
 
 ```
 neuron-ui/
-├── docs/                  # 设计规范文档
-│   └── base/
-│       ├── Agentour-base-desgin-ui.md      # 设计 Token 规范
-│       └── synnovatour-bse-desgin-ui.csv   # 组件规范清单
+├── docs/
+│   ├── base/                           # 设计规范
+│   │   ├── Agentour-base-desgin-ui.md
+│   │   ├── synnovatour-bse-desgin-ui.csv
+│   │   └── shared-design-tokens.md
+│   └── plan/                           # 规划文档
+│       ├── 00-overview.md              # 总体规划 (四大目标)
+│       ├── 01-goal-shadcn-design-system.md
+│       ├── 02-goal-component-api-mapping.md
+│       ├── 03-goal-auto-page-generation.md
+│       ├── 04-goal-drag-drop-refinement.md
+│       └── 05-architecture.md          # 前端组件架构
+├── packages/
+│   ├── tokens/                         # @neuron-ui/tokens
+│   ├── components/                     # @neuron-ui/components (shadcn 二次开发)
+│   ├── metadata/                       # @neuron-ui/metadata (映射规则 + Schema)
+│   ├── generator/                      # @neuron-ui/generator (自动生成引擎)
+│   └── page-builder/                   # @neuron-ui/page-builder (拖拉拽编辑器)
 ├── README.md
-└── ...
+└── CLAUDE.md
 ```
 
-## AI 使用指南
+## 技术栈
 
-AI Agent 在使用本组件库搭配页面时，应遵循以下原则：
-
-1. **使用设计 Token** — 颜色、间距、圆角等必须使用预定义的 Token 值，不要使用任意值
-2. **组件语义化组合** — 根据页面功能选择正确的组件类型（如表单用 Input/Combobox，展示用 Card/Data Table）
-3. **响应式优先** — 使用 Resizable 容器处理布局，遵循断点规范
-4. **内容可插拔** — 利用组件的插槽能力（文本/图片/icon/tag/头像）动态填充内容
+| 层面 | 技术 |
+|------|------|
+| UI 基础 | shadcn/ui + Radix UI |
+| 样式 | Tailwind CSS v4 |
+| 框架 | React 18+ + TypeScript |
+| 构建 | Vite + pnpm workspace + turborepo |
+| 组件文档 | Storybook |
+| 拖拽 | dnd-kit |
+| 状态管理 | Zustand |
+| 测试 | Vitest + Testing Library |
