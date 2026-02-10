@@ -49,6 +49,44 @@ Runtime 渲染器基于 Vercel **json-render** 框架 (`@json-render/core` + `@j
 
 > 基于 json-render，将 Page Schema 动态渲染为 React 组件树。
 
+### 7A.0 POC 验证阶段 (优先执行)
+
+> **风险缓解:** 在全量铺开 53 个组件注册之前，先用 5-8 个核心组件做最小可行验证，确认 json-render 能满足实际需求。
+
+**POC 范围: 8 个核心组件**
+
+| 组件 | 覆盖能力 |
+|------|---------|
+| NButton | 操作 + Action 系统 |
+| NInput | 输入 + 双向数据绑定 |
+| NText | 展示 + Token 映射 |
+| NCard | 容器 + children 嵌套 |
+| NDataTable | 复杂展示 + dataPath 数据获取 |
+| NDialog | 弹窗容器 + Action 触发 |
+| NSelect | 表单输入 + options |
+| NBadge | 简单展示 + variant |
+
+**POC 验证清单:**
+
+| # | 验证项 | 通过标准 |
+|---|--------|---------|
+| 1 | npm 包可用性 | `@json-render/core` 和 `@json-render/react` 可正常安装且 API 稳定 |
+| 2 | Catalog 注册 | 8 个组件的 Zod schema 可成功注册到 `createCatalog()` |
+| 3 | Registry 映射 | `defineRegistry()` 可将 catalog 组件映射到 React 实现 |
+| 4 | Renderer 渲染 | `<Renderer>` 可递归渲染包含嵌套组件的 UITree |
+| 5 | DataProvider | 数据模型注入和 `useDataValue()` 可正常工作 |
+| 6 | ActionProvider | Action 触发和处理可正常工作 |
+| 7 | Schema 转换 | 嵌套树 → 扁平邻接表转换正确 |
+| 8 | catalog.prompt() | 自动生成的 AI 提示词格式正确、内容完整 |
+
+**POC 产出:**
+
+- 技术可行性报告 (包含性能数据、API 兼容性、已知限制)
+- 若 POC 通过: 继续全量注册 53 个组件
+- 若 POC 未通过: 启动降级方案 (自建 ~500-800 行轻量渲染层)，adapter 层设计已预留切换空间
+
+**POC 预计工作量:** 2-3 天，应在 Phase 7A 正式开发前完成。
+
 ### 7A.1 包目录结构
 
 ```
@@ -334,7 +372,70 @@ export function DataSourceLayer({ schema, dataProvider, actionOverrides, childre
 }
 ```
 
-### 7A.6 NeuronPage: 顶层组装
+### 7A.6 组件懒加载策略
+
+> **性能优化:** 53 个组件全量打包到 runtime bundle 会导致体积过大。应根据 Page Schema 中实际使用的组件进行按需加载。
+
+**分层加载策略:**
+
+```typescript
+// catalog/neuron-registry.ts
+
+import { lazy } from 'react'
+import { defineRegistry } from '@json-render/react'
+
+// ── P0 同步加载: 几乎每个页面都会用到的核心组件 ──
+import { NButton, NText, NInput, NCard, NDataTable, NBadge } from '@neuron-ui/components'
+
+export const { registry } = defineRegistry(neuronCatalog, {
+  components: {
+    // 核心组件 (同步)
+    NButton: ({ props, onAction }) => <NButton {...props} onClick={() => props.action && onAction?.(props.action)} />,
+    NText: ({ props }) => <NText {...props} />,
+    NInput: ({ props }) => <NInput {...props} />,
+    NCard: ({ props, children }) => <NCard {...props}>{children}</NCard>,
+    NDataTable: ({ props }) => { ... },
+    NBadge: ({ props }) => <NBadge {...props} />,
+
+    // 弹窗/面板类 (懒加载 — 用户交互时才触发)
+    NDialog: lazy(() => import('./lazy/NDialogRenderer')),
+    NSheet: lazy(() => import('./lazy/NSheetRenderer')),
+    NDrawer: lazy(() => import('./lazy/NDrawerRenderer')),
+    NAlertDialog: lazy(() => import('./lazy/NAlertDialogRenderer')),
+
+    // 低频/重量级组件 (懒加载)
+    NChart: lazy(() => import('./lazy/NChartRenderer')),
+    NCalendar: lazy(() => import('./lazy/NCalendarRenderer')),
+    NCarousel: lazy(() => import('./lazy/NCarouselRenderer')),
+    NCommand: lazy(() => import('./lazy/NCommandRenderer')),
+  },
+})
+```
+
+**智能预加载: 基于 Page Schema 分析**
+
+```typescript
+// hooks/useNeuronPage.ts 中实现
+function preloadComponents(schema: PageSchema) {
+  const usedComponents = extractComponentNames(schema.tree)
+  // 预加载页面中用到的组件 (不阻塞首屏渲染)
+  usedComponents.forEach(name => {
+    if (lazyComponentMap[name]) {
+      lazyComponentMap[name].preload()
+    }
+  })
+}
+```
+
+**体积预算目标:**
+
+| 场景 | 首屏加载量 (gzip) |
+|------|-----------------|
+| 简单 CRUD 页面 (NDataTable + NButton + NDialog) | ≤ 80KB |
+| Dashboard (NCard + NChart + NProgress) | ≤ 100KB |
+| 全量加载 (编辑器场景) | ≤ 340KB |
+
+### 7A.7 NeuronPage: 顶层组装
 
 ```typescript
 // NeuronPage.tsx
@@ -547,6 +648,8 @@ json-render 的 `catalog.prompt()` 从 Catalog 定义自动生成 Markdown 格�
 | 5 | ActionProvider 正确处理 openDialog/submitForm/deleteItem/refresh/navigate/toast |
 | 6 | `neuronCatalog.prompt()` 输出可用的 AI 系统提示词 |
 | 7 | 运行时性能: Page Schema 加载 + adapter + 渲染 ≤ 1 秒 |
+| 8 | POC 验证通过: 8 个核心组件在 json-render 中全流程可用 |
+| 9 | 组件懒加载: 弹窗/低频组件按需加载，简单 CRUD 页面首屏 ≤ 80KB (gzip) |
 
 ### 7B: 代码生成器
 

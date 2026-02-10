@@ -9,13 +9,14 @@
 > - [目标 3: 自动生成引擎](./03-goal-auto-page-generation.md) — API 解析 → 映射匹配 → Page Schema 生成
 > - [目标 4: 拖拉拽编辑器](./04-goal-drag-drop-refinement.md) — 编辑器界面和技术方案
 >
-> 架构层级（7 个包）：
+> 架构层级（8 个包）：
 > ```
 > Layer 0: Design Tokens (@neuron-ui/tokens)
 > Layer 1: shadcn 原语 (src/ui/)
 > Layer 2: neuron 组件 (src/neuron/)
 > Layer 3: AI 页面生成 (@neuron-ui/generator) + 拖拉拽编辑器 (@neuron-ui/page-builder)
 > 消费层: 运行时渲染器 (@neuron-ui/runtime) + 代码生成 CLI (@neuron-ui/codegen)
+> 集成层: MCP Server (@neuron-ui/mcp-server) — AI 能力标准化接口
 > 侧面支撑: 组件-接口映射规则 (@neuron-ui/metadata) — 作为 AI 的参考指南
 > ```
 >
@@ -357,11 +358,11 @@ neuron-ui/
 │   │           ├── usePageSchema.ts           # 加载 Page Schema
 │   │           └── useNeuronPage.ts           # 组合 Hook
 │   │
-│   └── codegen/                               # @neuron-ui/codegen (CLI)
-│       ├── package.json
-│       ├── bin/
-│       │   └── neuron-codegen.ts              # CLI 入口
-│       └── src/
+│   ├── codegen/                               # @neuron-ui/codegen (CLI)
+│   │   ├── package.json
+│   │   ├── bin/
+│   │   │   └── neuron-codegen.ts              # CLI 入口
+│   │   └── src/
 │           ├── index.ts
 │           ├── cli.ts                         # commander 命令解析
 │           ├── commands/
@@ -382,8 +383,23 @@ neuron-ui/
 │           │   ├── overwrite.ts               # 覆盖 (自动备份)
 │           │   └── diff.ts                    # 差异对比
 │           └── utils/
-│               ├── schema-parser.ts
-│               └── code-formatter.ts          # Prettier 格式化
+│   │           ├── schema-parser.ts
+│   │           └── code-formatter.ts          # Prettier 格式化
+│   │
+│   └── mcp-server/                            # @neuron-ui/mcp-server (MCP 服务)
+│       ├── package.json
+│       ├── bin/
+│       │   └── neuron-mcp.ts                  # CLI 入口 (stdio transport)
+│       └── src/
+│           ├── index.ts                       # createNeuronMcpServer()
+│           ├── server.ts                      # MCP Server 主体
+│           ├── tools/                         # 11 个 MCP Tool handlers
+│           │   ├── metadata/                  # list-components, get-component, get-mapping, get-composition, get-tokens
+│           │   ├── generation/                # analyze-api, generate-page, validate-schema, suggest-components
+│           │   └── codegen/                   # generate-code, preview-code
+│           ├── resources/                     # 12 个 MCP Resources (metadata/tokens/schemas/examples)
+│           ├── prompts/                       # 3 个 MCP Prompt 模板
+│           └── loaders/                       # 数据加载层 (metadata/tokens/catalog/examples)
 │
 └── scripts/                                   # workspace 级脚本
     ├── build-all.ts
@@ -1039,6 +1055,7 @@ tokens (0 依赖)
     → runtime (依赖 components + metadata)
     → codegen (依赖 components + metadata)
   → page-builder (依赖 components + metadata + runtime)
+  → mcp-server (依赖 metadata + runtime + generator + codegen + tokens)
 ```
 
 ### 构建命令
@@ -1086,6 +1103,7 @@ tokens.json (手动维护)
 @neuron-ui/generator    → npm publish (AI 生成引擎)
 @neuron-ui/runtime      → npm publish (json-render 运行时渲染器)
 @neuron-ui/codegen      → npm publish (代码生成 CLI)
+@neuron-ui/mcp-server   → npm publish (MCP Server, npx @neuron-ui/mcp-server 启动)
 @neuron-ui/page-builder → 部署为 Web App (不发 npm)
 ```
 

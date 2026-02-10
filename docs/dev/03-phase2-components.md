@@ -46,6 +46,23 @@ navigation-menu, input-otp, slider, table, data-table
 
 ## Phase 2B: neuron 组件层 (Layer 2)
 
+### 全链路验证策略
+
+> **风险缓解:** 53 个组件是项目最大的工作量瓶颈 (265+ 文件)。为避免后期发现架构问题导致大量返工，应先用 P0 批次 (8 个核心组件) 跑通全链路验证。
+
+**P0 全链路验证 (建议在 Phase 2B 批次 1 完成后立即执行):**
+
+```
+P0 组件完成 (8 个)
+    ├── 验证 → Storybook 渲染正确
+    ├── 验证 → metadata 可提取 Props 类型生成 schema
+    ├── 验证 → json-render Catalog 可注册 (Phase 7A POC)
+    ├── 验证 → AI generator 可基于这 8 个组件生成简单页面 (Phase 4A 提前)
+    └── 确认 → 组件标准结构无阻塞性问题后，再批量铺开 P1-P4
+```
+
+**使用脚手架脚本加速:** Phase 0 准备的 `pnpm create-component` 脚本可批量生成组件骨架，避免手写重复样板代码。预计可节省 30-40% 的组件初始化时间。
+
 ### 组件标准结构
 
 每个组件严格遵循:

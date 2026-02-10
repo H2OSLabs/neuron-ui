@@ -778,3 +778,155 @@ packages/tokens → packages/components → packages/metadata → packages/gener
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## 图 14 / MCP Server 架构
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    @neuron-ui/mcp-server                                 │
+│                    AI 能力标准化接口                                       │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  外部 AI 客户端                                                         │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌───────────┐  │
+│  │ Claude Code  │  │ Cursor       │  │ Windsurf     │  │ 自建 Agent│  │
+│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └─────┬─────┘  │
+│         │                 │                 │                 │         │
+│         └─────────────────┴─────────────────┴─────────────────┘         │
+│                               │                                         │
+│                      MCP Protocol (JSON-RPC 2.0)                       │
+│                      Transport: stdio / Streamable HTTP                │
+│                               │                                         │
+│                               ▼                                         │
+│  ┌──────────────── MCP Server ──────────────────────────────────────┐  │
+│  │                                                                   │  │
+│  │  ┌────── Tools (11) ──────┐  ┌── Resources (12) ──┐  ┌─────┐   │  │
+│  │  │                        │  │                     │  │Prom-│   │  │
+│  │  │  Metadata (5):         │  │ component-manifest  │  │pts  │   │  │
+│  │  │    list_components     │  │ component-api-map   │  │(3)  │   │  │
+│  │  │    get_component       │  │ composition-rules   │  │     │   │  │
+│  │  │    get_mapping_rules   │  │ tokens/*            │  │page │   │  │
+│  │  │    get_composition     │  │ page-schema-spec    │  │-gen │   │  │
+│  │  │    get_tokens          │  │ examples/*          │  │     │   │  │
+│  │  │                        │  │ catalog/prompt      │  │comp │   │  │
+│  │  │  Generation (4):       │  │                     │  │-sel │   │  │
+│  │  │    analyze_api         │  └─────────────────────┘  │     │   │  │
+│  │  │    generate_page       │                           │sch- │   │  │
+│  │  │    validate_schema     │                           │rev  │   │  │
+│  │  │    suggest_components  │                           └─────┘   │  │
+│  │  │                        │                                     │  │
+│  │  │  Codegen (2):          │                                     │  │
+│  │  │    generate_code       │                                     │  │
+│  │  │    preview_code        │                                     │  │
+│  │  └────────────────────────┘                                     │  │
+│  │                                                                   │  │
+│  └───────────────────────────┬───────────────────────────────────────┘  │
+│                              │                                          │
+│                    ┌─────────┴─────────┐                                │
+│                    │  Loaders Layer    │                                │
+│                    └─────────┬─────────┘                                │
+│                              │                                          │
+│     ┌──────────────┬─────────┼─────────┬──────────────┐                │
+│     ▼              ▼         ▼         ▼              ▼                │
+│  ┌────────┐  ┌──────────┐  ┌───────┐  ┌──────────┐  ┌────────┐       │
+│  │metadata│  │ runtime  │  │tokens │  │generator │  │codegen │       │
+│  │manifest│  │ catalog  │  │tokens │  │generatePa│  │generate│       │
+│  │mapping │  │ registry │  │.json  │  │ge()      │  │()      │       │
+│  │rules   │  │ .prompt()│  │       │  │validate  │  │update()│       │
+│  │schemas │  │ .validate│  │       │  │Schema()  │  │        │       │
+│  └────────┘  └──────────┘  └───────┘  └──────────┘  └────────┘       │
+│                                                                         │
+│  ════════════ neuron-ui 内部包 (workspace 依赖) ═══════════════════     │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+数据流:
+
+  AI 客户端                         MCP Server                      neuron-ui 包
+  ─────────                        ──────────                      ────────────
+
+  "列出输入组件"     ──Tool调用──►  neuron_list_components    ──►  metadata-loader
+                                       │                              │
+                     ◄──JSON结果───   筛选 category="input"   ◄──  manifest.json
+                                                                   (13 个输入组件)
+
+  "分析这段 API"     ──Tool调用──►  neuron_analyze_api        ──►  generator
+                                       │                              │
+                     ◄──JSON结果───   结构化分析结果           ◄──  AI API 调用
+
+  "生成 CRUD 页面"   ──Tool调用──►  neuron_generate_page      ──►  generator
+                                       │                              │
+                                   1. catalog.prompt()         ◄──  runtime catalog
+                                   2. loadMapping()            ◄──  metadata mapping
+                                   3. generatePage()           ◄──  generator API
+                                   4. validateSchema()         ◄──  runtime catalog
+                     ◄──JSON结果───   校验后的 Page Schema
+
+  "生成代码"         ──Tool调用──►  neuron_generate_code       ──►  codegen
+                                       │                              │
+                     ◄──代码文件───   5 个 .tsx 文件            ◄──  Handlebars 模板
+```
+
+---
+
+## 图 15 / 完整包依赖关系 (含 MCP Server)
+
+```
+                    ┌──────────────────────────┐
+                    │   @neuron-ui/page-builder │
+                    │   (Web App - 拖拉拽编辑器) │
+                    └─────┬──────┬──────┬──────┘
+                          │      │      │
+              ┌───────────┘      │      └───────────┐
+              ▼                  ▼                   ▼
+┌─────────────────────┐  ┌──────────────┐  ┌────────────────────┐
+│ @neuron-ui/generator │  │ @neuron-ui/  │  │ @neuron-ui/        │
+│ (自动生成引擎)       │  │ metadata     │  │ components         │
+│                      │  │ (映射规则)   │  │ (53个组件)          │
+└──────────┬──────────┘  └──────┬───────┘  └──────────┬─────────┘
+           │                    │                      │
+           └──────────┬─────────┘                      │
+                      │                                │
+                      ▼                                ▼
+              ┌──────────────┐                ┌──────────────────┐
+              │ @neuron-ui/  │                │ @neuron-ui/      │
+              │ runtime      │                │ tokens           │
+              │ (Catalog +   │                │ (CSS + TS)       │
+              │  Registry)   │                └──────────────────┘
+              └──────────────┘                         ▲
+                     │                                 │
+                     └─────────────────────────────────┘
+
+
+              ┌───────────────────────────────────────────────────┐
+              │           @neuron-ui/mcp-server                    │
+              │           (MCP 服务 — 依赖所有包)                   │
+              └──┬──────┬──────┬──────┬──────┬────────────────────┘
+                 │      │      │      │      │
+                 ▼      ▼      ▼      ▼      ▼
+            metadata  runtime  generator  codegen  tokens
+
+              ┌──────────────┐
+              │ @neuron-ui/  │
+              │ codegen      │ ──── 依赖 components + metadata
+              │ (CLI)        │
+              └──────────────┘
+
+
+构建顺序:
+  tokens → components → metadata → runtime → generator / codegen → mcp-server
+                                                                      ↑
+                                                              (依赖最重，构建最晚)
+
+发布策略:
+  tokens       → npm publish (CSS + TS 常量)
+  components   → npm publish (React 组件)
+  metadata     → npm publish (JSON Schema)
+  generator    → npm publish (生成引擎)
+  runtime      → npm publish (json-render 渲染器)
+  codegen      → npm publish (代码生成 CLI)
+  mcp-server   → npm publish (MCP Server, npx @neuron-ui/mcp-server)
+  page-builder → 部署为 Web App (不发 npm)
+```

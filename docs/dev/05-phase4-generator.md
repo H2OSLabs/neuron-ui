@@ -62,7 +62,36 @@ packages/generator/
 5. Few-shot 示例 (2-3 个)
 ```
 
-### 4A.2 Few-shot 示例
+### 4A.2 Prompt 迭代空间设计
+
+> **关键认知:** Prompt 工程是一个需要反复调优的过程，不可能一次性完成。设计时应预留充分的迭代空间。
+
+**Prompt 模块化架构:**
+
+```
+system-prompt.ts
+├── base-role.ts          # 角色定义 (稳定层，极少变动)
+├── context-injection.ts  # 规则注入 (从 JSON 文件动态加载)
+├── output-format.ts      # 输出格式约束 (可按 LLM 调整)
+├── constraints.ts        # 约束条件 (可渐进式增删)
+└── example-selector.ts   # Few-shot 选择器 (按 pageType 动态选择)
+```
+
+**迭代策略:**
+
+| 阶段 | Prompt 策略 | 目标 |
+|------|------------|------|
+| 初始版本 | 基础 Prompt + 2 个 Few-shot | 能生成结构正确的 Page Schema |
+| 迭代 1 | 增加约束条件 + 更多 Few-shot | 提升字段映射准确率 |
+| 迭代 2 | 针对不同 LLM (Claude/GPT) 调整 output-format | 多模型兼容 |
+| 迭代 3 | 引入 `catalog.prompt()` 替代手动组件清单 | 与 Runtime Catalog 同步 |
+
+**多 LLM 兼容考量:**
+- 不同 LLM 对 JSON 输出的遵循度不同，`output-format.ts` 应可按 provider 配置
+- Claude 倾向于结构化输出，GPT 可能需要更明确的 JSON 边界标记
+- 本地模型 (如 Llama) 可能需要更简化的 Prompt 和更多 Few-shot
+
+### 4A.3 Few-shot 示例
 
 至少准备三个高质量示例:
 
@@ -86,6 +115,8 @@ interface GeneratePageOptions {
     pageType?: 'crud' | 'dashboard' | 'detail' | 'auto'  // 默认 'auto'
     formContainer?: 'dialog' | 'sheet' | 'drawer' | 'auto' // 默认 'auto'
   }
+  /** Human-in-the-loop: 生成前是否先输出 AI 的理解摘要供人工确认 */
+  confirmBeforeGenerate?: boolean  // 默认 false
 }
 
 interface GeneratePageResult {
@@ -98,7 +129,19 @@ interface GeneratePageResult {
   }
 }
 
+/** AI 对输入的理解摘要 (human-in-the-loop 确认步骤使用) */
+interface GenerationPreview {
+  detectedApis: Array<{ method: string; path: string; description: string }>
+  suggestedPageType: 'crud' | 'dashboard' | 'detail'
+  suggestedComponents: string[]
+  suggestedLayout: string  // 布局描述
+  confirm: () => Promise<GeneratePageResult>  // 确认后继续生成
+  abort: () => void                           // 取消生成
+}
+
 export async function generatePage(options: GeneratePageOptions): Promise<GeneratePageResult>
+/** Human-in-the-loop 模式: 先返回预览，人工确认后再生成完整 Page Schema */
+export async function previewGeneration(options: GeneratePageOptions): Promise<GenerationPreview>
 ```
 
 ### 4B.2 调用流程
@@ -117,6 +160,11 @@ generatePage() 执行步骤:
    ├── Few-shot 示例 (根据 preferences.pageType 选择)
    └── User Prompt (apiList + taskCase)
 
+2.5 [可选] Human-in-the-loop 确认 (confirmBeforeGenerate = true 时)
+   ├── AI 先分析输入, 输出理解摘要 (识别到的 API、建议页面类型、建议组件)
+   ├── 用户确认摘要正确 → 继续步骤 3
+   └── 用户修正 → 更新 Prompt 后继续步骤 3
+
 3. 调用 AI API
    └── 发送 messages → 获取文本响应
 
@@ -134,8 +182,16 @@ generatePage() 执行步骤:
    ├── 尝试自动修复 (常见问题)
    └── 重试 (最多 2 次, 带校验错误反馈)
 
-7. 返回 Page Schema
+7. 重试全部失败? → 降级方案 (见 4C.4)
+
+8. 返回 Page Schema
 ```
+
+**Human-in-the-loop 使用场景:**
+- 输入格式为非结构化文本描述时 (AI 理解可能偏差)
+- 页面类型不明确时 (CRUD vs Dashboard)
+- MCP Server / Page Builder 的交互场景 (用户可实时确认)
+- 批量生成时，对第一个页面做确认，后续页面自动生成
 
 ### 4B.3 AI Provider 抽象
 
@@ -214,8 +270,53 @@ async function generateWithRetry(options, maxRetries = 2): Promise<GeneratePageR
     // 重试: 将校验错误作为反馈注入下一轮 prompt
     options = appendValidationFeedback(options, validation.errors)
   }
-  throw new GenerationError('Max retries exceeded', lastErrors)
+
+  // 重试全部失败 → 降级方案
+  return fallbackGenerate(options, lastErrors)
 }
+```
+
+### 4C.4 降级方案 (重试失败后)
+
+> 当 AI 生成 + 自动修复 + 2 次重试全部失败后，不应直接抛出错误，而应返回一个最小可用的 Page Schema 骨架，让用户在编辑器中手动完善。
+
+```typescript
+function fallbackGenerate(options, errors): GeneratePageResult {
+  // 基于已识别的 API 和 pageType，生成最小骨架
+  const skeleton = generateSkeleton(options)
+
+  return {
+    pageSchema: skeleton,
+    metadata: {
+      generatedBy: 'ai',
+      apiResource: options.apiList,
+      taskCase: options.taskCase,
+      retries: maxRetries,
+      degraded: true,                    // 标记为降级结果
+      degradeReason: errors,             // 附带失败原因
+      suggestedActions: [                // 给用户的修复建议
+        '在编辑器中手动添加缺失的组件',
+        '检查 API 格式是否可被 AI 正确理解',
+        '尝试简化 TaskCase 描述后重新生成'
+      ]
+    }
+  }
+}
+```
+
+**骨架生成策略:**
+
+| pageType | 骨架内容 |
+|----------|---------|
+| crud | NResizable + NCard(搜索区) + NDataTable(空列) + NDialog(空表单) |
+| dashboard | NResizable + NCard[] (空卡片) |
+| detail | NCard + NTabs(空 tab) |
+| auto (无法判断) | NResizable + NCard + NText("请在编辑器中继续完善此页面") |
+
+**降级结果在编辑器中的表现:**
+- 页面顶部显示黄色提示条: "此页面为 AI 降级生成，请手动完善"
+- 空的组件区域高亮显示，引导用户填充内容
+- 属性面板提供"重新生成"按钮，允许用户修改输入后再次尝试
 ```
 
 ## 交付物
@@ -241,3 +342,6 @@ async function generateWithRetry(options, maxRetries = 2): Promise<GeneratePageR
 | 6 | 生成结果通过 Page Schema 校验 (格式 + 嵌套 + Token) |
 | 7 | 自动修复能处理常见错误 (原始色值、缺少 id 等) |
 | 8 | 重试机制在校验失败时能带反馈重试 |
+| 9 | `previewGeneration()` 返回正确的 AI 理解摘要 (human-in-the-loop) |
+| 10 | 重试全部失败后降级返回最小可用骨架 (不抛错) |
+| 11 | Prompt 模块化架构支持独立替换各部分 (role/context/format/constraints) |

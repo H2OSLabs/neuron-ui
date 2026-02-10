@@ -70,6 +70,8 @@
 
 ## 性能验证
 
+### 核心性能指标
+
 | 指标 | 目标 |
 |------|------|
 | AI 生成时间 | ≤ 30 秒 (含重试) |
@@ -77,6 +79,61 @@
 | 拖拽操作延迟 | ≤ 16ms (60fps) |
 | 撤销/重做响应 | ≤ 50ms |
 | 组件懒加载 | 按需, 首屏 ≤ 3 秒 |
+
+### 详细性能预算分配
+
+> 53 个组件全部打包到 runtime bundle 可能导致体积过大。以下是各模块的体积预算和优化策略。
+
+**Bundle 体积预算 (gzip 压缩后):**
+
+| 模块 | 预算 | 说明 |
+|------|------|------|
+| @neuron-ui/runtime 核心 | ≤ 30KB | Catalog + Registry + Adapter + DataSourceLayer |
+| @neuron-ui/components 全量 | ≤ 200KB | 53 个组件全部打包 (不含 Radix UI) |
+| Radix UI 依赖 | ≤ 80KB | 按需引入的 Radix 原语 |
+| @json-render 依赖 | ≤ 15KB | core + react |
+| Zod | ≤ 15KB | Schema 校验 |
+| **总计** | **≤ 340KB** | runtime 模式全量加载 |
+
+**首屏优化 — 分层加载策略:**
+
+| 优先级 | 加载内容 | 时机 | 目标 |
+|--------|---------|------|------|
+| P0 (立即) | Runtime 核心 + SchemaAdapter + DataSourceLayer | 首屏 | ≤ 50KB, ≤ 500ms |
+| P1 (首屏可见) | 页面中实际使用的组件 (按 Page Schema tree 分析) | 首屏渲染前 | 按需, 仅加载所需 |
+| P2 (延迟) | 弹窗/侧边栏内的组件 (NDialog, NSheet 内部) | 用户触发时 | 不影响首屏 |
+| P3 (空闲) | 剩余未使用的组件 (编辑器场景预加载) | 浏览器空闲时 | 后台加载 |
+
+**Runtime 包组件懒加载实现方案:**
+
+```typescript
+// neuron-registry.ts 中按需加载组件
+const lazyRegistry = defineRegistry(neuronCatalog, {
+  components: {
+    // P0 核心组件: 同步加载
+    NText: ({ props }) => <NText {...props} />,
+    NButton: ({ props, onAction }) => <NButton {...props} />,
+
+    // P2 弹窗类组件: 懒加载
+    NDialog: lazy(() => import('@neuron-ui/components/neuron/NDialog')),
+    NSheet: lazy(() => import('@neuron-ui/components/neuron/NSheet')),
+    NDrawer: lazy(() => import('@neuron-ui/components/neuron/NDrawer')),
+
+    // P3 低频组件: 懒加载
+    NChart: lazy(() => import('@neuron-ui/components/neuron/NChart')),
+    NCalendar: lazy(() => import('@neuron-ui/components/neuron/NCalendar')),
+    NCarousel: lazy(() => import('@neuron-ui/components/neuron/NCarousel')),
+  },
+})
+```
+
+**编辑器 vs Runtime 加载策略差异:**
+
+| | 编辑器 (page-builder) | Runtime (runtime) |
+|---|---|---|
+| 加载策略 | 全量预加载 (编辑器需要所有组件) | 按需懒加载 (仅加载页面使用的) |
+| 首屏要求 | ≤ 3 秒 (可接受较慢) | ≤ 1 秒 (用户直接访问) |
+| Bundle 目标 | 不做体积优化 (开发工具) | 严格体积预算 (生产环境) |
 
 ## 测试策略
 

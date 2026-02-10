@@ -83,6 +83,7 @@ Layer 0: Design Tokens (@neuron-ui/tokens)        — tokens.json 单一来源
 @neuron-ui/page-builder    → Layer 3: 拖拉拽编辑器 (Web App, 不发 npm)
 @neuron-ui/runtime         → Consumer: 运行时渲染器 (目标项目动态渲染 Page Schema)
 @neuron-ui/codegen         → Consumer: 代码生成 CLI (Page Schema → .tsx 源码)
+@neuron-ui/mcp-server      → Integration: MCP 服务 (AI 能力标准化接口)
 ```
 
 **构建顺序:**
@@ -92,6 +93,7 @@ tokens → components → metadata → generator / page-builder
                    ↘            ↗
                     runtime (依赖 components)
                     codegen (依赖 components + metadata)
+                    mcp-server (依赖 metadata + runtime + generator + codegen + tokens)
 ```
 
 ### 3.3 技术栈
@@ -428,7 +430,59 @@ npx neuron-codegen generate ./schemas/competition-list.json --outdir src/pages/c
 
 ---
 
-## 十一、端到端流程
+## 十一、MCP Server — AI 能力标准化接口
+
+neuron-ui 的 AI 能力 (组件查询、页面生成、Schema 校验、代码生成) 通过 **MCP Server** (`@neuron-ui/mcp-server`) 封装为标准 [Model Context Protocol](https://modelcontextprotocol.io) 服务。
+
+### 11.1 定位
+
+```
+neuron-ui 内部各包 (metadata/generator/runtime/codegen/tokens)
+       ↓ 统一封装
+@neuron-ui/mcp-server
+       ↓ MCP 标准协议
+任何 MCP 客户端 (Claude Code / Cursor / Windsurf / 自建 Agent)
+```
+
+**核心价值:** 一次封装，所有 AI 客户端通用; 服务端实时读取最新数据，无需手动同步参考文件。
+
+### 11.2 暴露的能力
+
+| 类型 | 名称 | 说明 |
+|------|------|------|
+| **Tool** | `neuron_list_components` | 列出 53 个组件 (支持分类/角色过滤) |
+| **Tool** | `neuron_get_component` | 获取组件完整详情 (Props/变体/嵌套) |
+| **Tool** | `neuron_get_mapping_rules` | 字段→组件映射 + API→页面映射 |
+| **Tool** | `neuron_get_tokens` | Design Token 值 |
+| **Tool** | `neuron_analyze_api` | 分析任意格式 API 文档 |
+| **Tool** | `neuron_generate_page` | 生成 Page Schema |
+| **Tool** | `neuron_validate_schema` | 校验 Page Schema |
+| **Tool** | `neuron_suggest_components` | 为字段推荐组件 |
+| **Tool** | `neuron_generate_code` | Page Schema → .tsx 源码 |
+| **Resource** | `neuron://metadata/*` | 组件清单/映射/规则 JSON |
+| **Resource** | `neuron://tokens/*` | Token 数据 |
+| **Resource** | `neuron://examples/*` | 示例 Page Schema |
+| **Prompt** | `neuron-page-generation` | 页面生成完整 Prompt 模板 |
+
+### 11.3 使用方式
+
+```jsonc
+// .claude/mcp.json 或 .cursor/mcp.json
+{
+  "mcpServers": {
+    "neuron-ui": {
+      "command": "npx",
+      "args": ["@neuron-ui/mcp-server"]
+    }
+  }
+}
+```
+
+> 详细设计: [Phase 8: MCP Server](../dev/09-phase8-mcp-server.md)
+
+---
+
+## 十二、端到端流程
 
 以"赛事管理 CRUD"为例:
 
@@ -459,7 +513,7 @@ Step 7: 交付到目标项目
 
 ---
 
-## 十二、文档导航
+## 十三、文档导航
 
 | 分类 | 文档 | 说明 |
 |------|------|------|
@@ -482,3 +536,4 @@ Step 7: 交付到目标项目
 | | `docs/dev/06-phase5-page-builder.md` | Phase 5: 编辑器 |
 | | `docs/dev/07-phase6-integration.md` | Phase 6: 集成测试 |
 | | `docs/dev/08-phase7-consumption.md` | Phase 7: 页面消费层 (Runtime + CodeGen) |
+| | `docs/dev/09-phase8-mcp-server.md` | Phase 8: MCP Server (AI 能力标准化接口) |

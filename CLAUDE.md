@@ -37,7 +37,7 @@ pnpm storybook                            # Launch Storybook
 
 ## Monorepo Architecture
 
-Seven packages with strict dependency order:
+Eight packages with strict dependency order:
 
 ```
 @neuron-ui/tokens          → Layer 0: Design tokens (CSS + TS + JSON from tokens.json)
@@ -47,9 +47,10 @@ Seven packages with strict dependency order:
 @neuron-ui/page-builder    → Layer 3: Drag-and-drop visual editor (web app, not npm)
 @neuron-ui/runtime         → Consumer: Runtime renderer based on json-render (Catalog + Registry + Adapter)
 @neuron-ui/codegen         → Consumer: CLI code generator (Page Schema → .tsx source files)
+@neuron-ui/mcp-server      → Integration: MCP Server exposing all AI capabilities as standardized tools
 ```
 
-**Build order:** tokens → components → metadata → generator / page-builder / runtime / codegen
+**Build order:** tokens → components → metadata → generator / page-builder / runtime / codegen → mcp-server
 
 ## Four-Layer Component Architecture
 
@@ -117,6 +118,7 @@ Page Schema is the JSON format output by the AI generator, consumed by the page 
 | `docs/base/shared-design-tokens.md` | Design token specifications |
 | `docs/guides/project-overview.md` | Comprehensive project overview |
 | `docs/guides/page-consumption.md` | Page Schema consumption modes (runtime + codegen) |
+| `docs/dev/09-phase8-mcp-server.md` | MCP Server design (Tools + Resources + Prompts) |
 
 ## Claude Skills
 
@@ -127,4 +129,11 @@ This repo includes custom skills in `.claude/skills/`:
 
 ## MCP Servers
 
-Configured in `.claude/skills/mcp.json`: context7 (docs lookup), shadcn (component scaffolding via `npx shadcn@latest mcp`)
+Configured in `.claude/mcp.json`: context7 (docs lookup), shadcn (component scaffolding via `npx shadcn@latest mcp`)
+
+**@neuron-ui/mcp-server** (planned): A dedicated MCP Server that wraps all neuron-ui AI capabilities:
+- **11 Tools:** component queries, API analysis, page generation, schema validation, code generation
+- **12 Resources:** metadata JSON, token data, schema specs, examples, catalog prompt
+- **3 Prompts:** page generation, component selection, schema review
+- Any MCP-compatible client (Claude Code, Cursor, Windsurf) can consume these capabilities
+- Design doc: `docs/dev/09-phase8-mcp-server.md`

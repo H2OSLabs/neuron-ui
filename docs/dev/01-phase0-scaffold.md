@@ -35,8 +35,9 @@ packages/
 ├── metadata/         → @neuron-ui/metadata
 ├── generator/        → @neuron-ui/generator
 ├── page-builder/     → @neuron-ui/page-builder
-├── runtime/          → @neuron-ui/runtime         ★ 新增: 运行时渲染器
-└── codegen/          → @neuron-ui/codegen          ★ 新增: 代码生成 CLI
+├── runtime/          → @neuron-ui/runtime         ★ 运行时渲染器
+├── codegen/          → @neuron-ui/codegen          ★ 代码生成 CLI
+└── mcp-server/       → @neuron-ui/mcp-server       ★ MCP Server (AI 能力接口)
 ```
 
 ### 0.3 包依赖配置
@@ -49,6 +50,7 @@ packages/
 @neuron-ui/page-builder  → 依赖 @neuron-ui/components, @neuron-ui/metadata
 @neuron-ui/runtime       → 依赖 @neuron-ui/components (组件实现), @neuron-ui/metadata (PageSchema 类型)
 @neuron-ui/codegen       → 依赖 @neuron-ui/components (类型引用), @neuron-ui/metadata (schema 定义)
+@neuron-ui/mcp-server    → 依赖 @neuron-ui/metadata, @neuron-ui/runtime, @neuron-ui/generator, @neuron-ui/codegen, @neuron-ui/tokens
 ```
 
 ### 0.4 根 scripts 配置
@@ -88,7 +90,49 @@ packages/
 }
 ```
 
-### 0.6 工具链安装
+### 0.6 组件代码模板生成脚本 (Scaffolding)
+
+> **提效关键:** Phase 2 需要交付 53 个组件，每个组件 5 个文件 (共 265+ 文件)。手写样板代码效率极低，应在 Phase 0 就准备好组件生成脚本。
+
+- [ ] 创建 `scripts/create-component.ts` 组件脚手架脚本
+
+**脚本功能:**
+
+```bash
+# 用法示例
+pnpm create-component NButton --category action --shadcn button
+pnpm create-component NText --category display --no-shadcn
+```
+
+**自动生成的文件结构:**
+
+```
+packages/components/src/neuron/{NComponent}/
+├── {NComponent}.tsx           # 实现骨架 (含 data-neuron-component 属性)
+├── {NComponent}.types.ts      # Props 接口 (含 Token 类型引用)
+├── {NComponent}.test.tsx      # Vitest 单测模板
+├── {NComponent}.stories.tsx   # Storybook stories 模板
+└── index.ts                   # barrel export
+```
+
+**脚本还应自动:**
+
+- 将新组件追加到 `src/index.ts` barrel 导出
+- 如指定 `--shadcn`，验证对应 shadcn 原语已安装
+- 如指定 `--category`，在 stories 中标注正确分类
+- Props 接口预填 Token 类型引用 (ColorToken, SizeToken 等)
+
+**根 scripts 配置补充:**
+
+```jsonc
+{
+  "scripts": {
+    "create-component": "tsx scripts/create-component.ts"
+  }
+}
+```
+
+### 0.7 工具链安装
 
 **根依赖 (devDependencies):**
 - `turbo`
@@ -124,6 +168,11 @@ packages/
 - `ts-morph` (AST 操作, merge 策略)
 - `chalk`, `ora` (CLI 输出)
 
+**packages/mcp-server:**
+- `@modelcontextprotocol/sdk` (MCP 协议 TypeScript SDK)
+- `tsup` (构建工具)
+- `zod` (参数校验)
+
 ## 交付物
 
 | 文件 | 状态 |
@@ -131,8 +180,9 @@ packages/
 | pnpm-workspace.yaml | 创建 |
 | turbo.json | 创建 |
 | tsconfig.base.json | 创建 |
-| packages/*/package.json | 7 个包 |
-| packages/*/tsconfig.json | 7 个包 |
+| packages/*/package.json | 8 个包 |
+| packages/*/tsconfig.json | 8 个包 |
+| scripts/create-component.ts | 创建 (组件脚手架脚本) |
 
 ## 验收标准
 
@@ -143,3 +193,4 @@ packages/
 | 3 | `pnpm lint` 无报错 |
 | 4 | `pnpm test` 无报错 (空测试) |
 | 5 | 各包之间 workspace 依赖正确解析 |
+| 6 | `pnpm create-component NExample --category display` 可正确生成 5 个文件 |

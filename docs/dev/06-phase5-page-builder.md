@@ -49,6 +49,56 @@ packages/page-builder/
 │           └── leaderboard.json
 ```
 
+## Phase 5A/7A 协同开发策略
+
+> **关键依赖:** Phase 5A 的 EditorRenderer 直接依赖 Phase 7A 的 Catalog、Registry 和 SchemaAdapter。两者接口不一致将导致严重返工。
+
+### 接口契约 (Phase 5A 与 7A 共同遵守)
+
+**在两个 Phase 正式开发前，必须先锁定以下接口契约:**
+
+```typescript
+// ============ 接口契约 (packages/runtime/src/types.ts) ============
+
+/** 1. Catalog 导出接口 */
+export { neuronCatalog } from './catalog/neuron-catalog'
+// EditorRenderer 使用: neuronCatalog.validateElement() 做实时校验
+
+/** 2. Registry 导出接口 */
+export { registry } from './catalog/neuron-registry'
+// EditorRenderer 使用: 传入 <Renderer registry={registry} />
+
+/** 3. Schema 转换接口 */
+export { pageSchemaToUITree } from './adapter/schema-adapter'
+// EditorRenderer 使用: 将编辑器中的 PageSchema 转换为 UITree 传给 Renderer
+
+/** 4. Token 映射接口 */
+export { resolveTokenValue } from './adapter/token-adapter'
+// PropertyPanel 使用: Token key → 实际值 (用于属性面板预览)
+```
+
+### 开发协同建议
+
+| 建议 | 说明 |
+|------|------|
+| **同一人/组负责** | Phase 5A 和 7A 的核心部分 (Catalog, Registry, Adapter) 建议由同一人或紧密协作的小组负责，避免接口理解偏差 |
+| **7A 先行** | 7A 的 POC (7A.0) 和核心模块 (Catalog + Registry + Adapter) 应先于 5A 完成，5A 作为消费方验证接口可用性 |
+| **Mock 先行** | 若 7A 进度滞后，5A 可基于接口契约创建 mock 实现先行开发编辑器交互层，待 7A 完成后替换 |
+| **共用测试用例** | 7A 的 Catalog 单测和 5A 的 EditorRenderer 集成测试共用同一组 Page Schema 测试数据 |
+
+### 并行开发时序
+
+```
+Phase 7A.0 (POC) ─────────►
+Phase 7A Catalog+Registry ──────────────►
+                                    ↓ 接口稳定
+Phase 5A EditorRenderer ─────────────────────────►
+Phase 7A DataSource+NeuronPage ──────────────────────────►
+Phase 5B 编辑器核心 ────────────────────────────────────────►
+```
+
+---
+
 ## Phase 5A: EditorRenderer 渲染器 (基于 json-render)
 
 > 编辑器与 `@neuron-ui/runtime` **共用同一套 json-render 渲染机制** (Catalog + Registry + Renderer)，避免维护两套并行的渲染系统。
