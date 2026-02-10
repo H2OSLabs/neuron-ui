@@ -62,7 +62,7 @@ shadcn 二次开发    ──►    组件-接口类型映射    ──►    AP
 ```
 阶段 1 — 基建 (目标 1)
 ├── Design Token 包 (暖灰色系 + Tailwind v4)
-├── shadcn 二次开发 25+ 组件
+├── shadcn 二次开发 53 组件
 ├── Storybook 组件文档
 └── 组件 TypeScript 类型定义
 

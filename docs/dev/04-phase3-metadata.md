@@ -39,7 +39,9 @@
 
 ### 3A.2 per-component Schema
 
-`schemas/*.schema.json`: 每个组件的 Props JSON Schema，用于校验 Page Schema 中的 props。
+`schemas/*.schema.json`: 每个组件的 Props JSON Schema，作为**外部文档参考**。
+
+> **重要说明:** 运行时的 props 校验统一使用 `@neuron-ui/runtime` 中 neuronCatalog 的 **Zod schema** (Single Source of Truth)。此处的 JSON Schema 文件仅供外部工具消费 (如 JSON 编辑器的智能提示)，不作为运行时校验依据。未来可考虑从 Zod schema 自动生成 JSON Schema 以保持同步。
 
 ```
 schemas/

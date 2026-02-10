@@ -32,17 +32,17 @@ Phase 4: AI 生成引擎 (@neuron-ui/generator)           ← 依赖 Phase 3
     │   └── 4C: 校验器 + 自动修复
     │
 Phase 5: 可视化编辑器 (@neuron-ui/page-builder)       ← 依赖 Phase 2 + 3
-    │   ├── 5A: PageRenderer 渲染器
+    │   ├── 5A: EditorRenderer (基于 json-render)
     │   ├── 5B: 拖拽画布 + 属性面板
     │   └── 5C: 预览 + 导出
     │
 Phase 6: 集成测试 + 端到端验证                         ← 依赖 Phase 0-5
+    │   含全链路验收 (API → AI 生成 → 编辑器 → 消费层 → 导出)
     │
-Phase 7: 页面消费层                                    ← 依赖 Phase 2 + 3 + 5A
-    │   ├── 7A: Runtime 渲染器 (@neuron-ui/runtime)
+Phase 7: 页面消费层                                    ← 依赖 Phase 2 + 3
+    │   ├── 7A: Runtime 渲染器 (@neuron-ui/runtime)  — json-render Catalog + Registry
+    │   │       (注: 5A 编辑器渲染依赖 7A 的 Catalog/Registry，可并行开发核心部分)
     │   └── 7B: 代码生成 CLI (@neuron-ui/codegen)
-    │
-Phase 8: 全链路验收                                    ← 依赖全部
 ```
 
 ## 关键里程碑
@@ -68,8 +68,10 @@ Phase 8: 全链路验收                                    ← 依赖全部
 - [Phase 3: AI 元数据](./04-phase3-metadata.md)
 - [Phase 4: AI 生成引擎](./05-phase4-generator.md)
 - [Phase 5: 可视化编辑器](./06-phase5-page-builder.md)
-- [Phase 6: 集成测试](./07-phase6-integration.md)
+- [Phase 6: 集成测试 + 全链路验收](./07-phase6-integration.md)
 - [Phase 7: 页面消费层](./08-phase7-consumption.md)
+
+> 注: 原 Phase 8 (全链路验收) 已合并至 Phase 6，不再单独设立。
 
 ## 并行策略
 
@@ -81,10 +83,10 @@ Phase 2B (P0-P2) ─────────────────────
 Phase 3A-3B ───────────────────────────────►         (可与 Phase 2B 并行，先用已有组件)
 Phase 4A ───────────────────────────────────────►    (Prompt 设计可提前)
 Phase 4B-4C ──────────────────────────────────────────►
-Phase 5A ──────────────────────────────────────────────►  (依赖 Phase 2 核心组件)
-Phase 5B-5C ────────────────────────────────────────────────────►
-Phase 6 ──────────────────────────────────────────────────────────────►
-Phase 7A ──────────────────────────────────────────────────────────►   (依赖 Phase 2 + 5A 渲染器)
+Phase 7A (Catalog+Registry) ───────────────────────────────────►  (核心部分可与 Phase 2 并行)
+Phase 5A ──────────────────────────────────────────────────────►  (依赖 Phase 2 + 7A Catalog/Registry)
+Phase 5B-5C ────────────────────────────────────────────────────────────►
+Phase 7A (DataSource+NeuronPage) ───────────────────────────────────────►  (完整运行时)
 Phase 7B ─────────────────────────────────────────────────────────────────►  (依赖 Phase 3 metadata)
-Phase 8 ────────────────────────────────────────────────────────────────────►
+Phase 6 ──────────────────────────────────────────────────────────────────────►  (全链路验收)
 ```

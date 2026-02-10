@@ -47,7 +47,7 @@ packages/
 @neuron-ui/metadata      → 依赖 @neuron-ui/components (类型引用)
 @neuron-ui/generator     → 依赖 @neuron-ui/metadata
 @neuron-ui/page-builder  → 依赖 @neuron-ui/components, @neuron-ui/metadata
-@neuron-ui/runtime       → 依赖 @neuron-ui/components (渲染器 + 组件)
+@neuron-ui/runtime       → 依赖 @neuron-ui/components (组件实现), @neuron-ui/metadata (PageSchema 类型)
 @neuron-ui/codegen       → 依赖 @neuron-ui/components (类型引用), @neuron-ui/metadata (schema 定义)
 ```
 

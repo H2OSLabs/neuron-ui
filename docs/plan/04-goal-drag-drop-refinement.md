@@ -130,17 +130,18 @@
 }
 
 // 替换后 — dataSource 保留，展示方式改变
+// 注意: NScrollArea + NCard 组合替代表格布局，所有组件均在 53 组件清单内
 {
   "id": "card-grid",
-  "component": "NCardGrid",    // 替换为卡片网格
-  "props": { "columns": 3, "gap": "md" },
+  "component": "NScrollArea",   // 使用滚动容器包裹卡片列表
+  "props": { "direction": "vertical" },
   "binding": {
     "dataSource": "competitionList",  // ★ 数据绑定保留不变
     "itemTemplate": {                  // 每个数据项的渲染模板
       "component": "NCard",
       "props": { "variant": "cover-top", "radius": "lg" },
       "fieldMapping": {
-        "media": { "field": "cover_image", "component": "NImage" },
+        "media": { "field": "cover_image", "component": "NAspectRatio" },
         "title": { "field": "name", "component": "NText" },
         "badges": { "field": "status", "component": "NBadge" },
         "footer": { "field": "created_by", "component": "NAvatar" }
@@ -210,12 +211,12 @@
 }
 
 // 修改后: 头像+文本组合
+// 使用 NResizable 作为行内组合容器 (53 组件清单内的布局组件)
 {
   "field": "name",
   "header": "赛事名称",
-  "component": "NComposite",            // 组合容器
-  "layout": "horizontal",
-  "gap": "sm",
+  "component": "NResizable",
+  "props": { "layout": "horizontal", "gap": "sm" },
   "children": [
     { "component": "NAvatar", "props": { "size": "sm" }, "binding": { "field": "created_by.avatar" } },
     { "component": "NText", "binding": { "field": "name" } }
@@ -363,9 +364,9 @@ NDataTable 列 → NCard slot 映射规则:
 
 | 层面 | 方案 |
 |------|------|
-| 画布渲染 | 复用 PageRenderer (与目标 3 生成预览相同的渲染器) |
+| 画布渲染 | 基于 json-render Renderer + Registry (与 @neuron-ui/runtime 共用同一套渲染机制) |
 | 拖拽引擎 | dnd-kit (React 拖拽库) |
-| 状态管理 | Zustand + temporal 中间件 (undo/redo) |
+| 状态管理 | Zustand + zundo (temporal) 中间件 (undo/redo) |
 | 属性面板 | 基于组件 Schema 自动生成编辑器 |
 | 数据绑定面板 | 读取 Page Schema 中的 binding 字段，可视化展示 |
 
@@ -384,13 +385,13 @@ NDataTable 列 → NCard slot 映射规则:
 
 | 优先级 | 任务 |
 |--------|------|
-| P0 | PageRenderer (Schema → React 渲染，与目标 3 共用) |
+| P0 | EditorRenderer (基于 json-render Renderer，与 @neuron-ui/runtime 共用 Catalog + Registry) |
 | P0 | 画布拖拽排序 |
 | P0 | 属性编辑面板 (基于 Schema 自动生成) |
 | P1 | 数据绑定可视化面板 |
 | P1 | 组件增删功能 |
 | P1 | 撤销/重做 |
-| P2 | 预览模式 (桌面/平板/手机) |
+| P2 | 预览模式 (桌面/平板/多功能区收起) |
 | P2 | 增量合并 (API 变更后保留手动调整) |
 | P3 | 导出 JSON / HTML |
 | P3 | 模板保存与复用 |

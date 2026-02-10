@@ -9,17 +9,20 @@
 > - [目标 3: 自动生成引擎](./03-goal-auto-page-generation.md) — API 解析 → 映射匹配 → Page Schema 生成
 > - [目标 4: 拖拉拽编辑器](./04-goal-drag-drop-refinement.md) — 编辑器界面和技术方案
 >
-> 新增包 `@neuron-ui/generator` 负责 AI 驱动的页面生成，架构层级更新：
+> 架构层级（7 个包）：
 > ```
 > Layer 0: Design Tokens (@neuron-ui/tokens)
 > Layer 1: shadcn 原语 (src/ui/)
 > Layer 2: neuron 组件 (src/neuron/)
 > Layer 3: AI 页面生成 (@neuron-ui/generator) + 拖拉拽编辑器 (@neuron-ui/page-builder)
+> 消费层: 运行时渲染器 (@neuron-ui/runtime) + 代码生成 CLI (@neuron-ui/codegen)
 > 侧面支撑: 组件-接口映射规则 (@neuron-ui/metadata) — 作为 AI 的参考指南
 > ```
 >
-> 重要变更：生成引擎由确定性解析器改为 AI 驱动，输入不再要求固定格式。
-> 用户可提供任意格式的 API 列表和 TaskCase，AI 理解内容后参考映射规则生成 Page Schema。
+> 重要变更：
+> - 生成引擎由确定性解析器改为 AI 驱动，输入不再要求固定格式。
+> - 渲染统一使用 json-render (Catalog + Registry + Renderer)，编辑器和运行时共用同一套渲染机制。
+> - 组件 props 校验统一使用 Zod (json-render Catalog 中的 Zod schema 为唯一定义源)。
 
 ---
 
@@ -29,7 +32,7 @@
 ┌─────────────────────────────────────────────────────────────┐
 │  Layer 3: Page Builder (拖拉拽搭建平台)                       │
 │  @neuron-ui/page-builder                                    │
-│  PageRenderer · Canvas · PropertyPanel · ComponentPanel     │
+│  EditorRenderer (json-render) · Canvas · PropertyPanel · ComponentPanel │
 └──────────────────────────┬──────────────────────────────────┘
                            │ 消费
 ┌──────────────────────────▼──────────────────────────────────┐
@@ -54,31 +57,31 @@
 **侧面支撑：**
 
 ```
-┌─────────────────────────────────┐
-│  @neuron-ui/metadata            │
-│  component-manifest.json        │  ← AI Agent 入口
-│  composition-rules.json         │  ← 组合约束
-│  schemas/*.schema.json          │  ← Props 定义
-│  builder-registry/              │  ← 搭建平台注册
-└─────────────────────────────────┘
+┌───────────────────────────────────┐
+│  @neuron-ui/metadata              │
+│  component-manifest.json          │  ← AI Agent 入口: 53 组件清单
+│  component-api-mapping.json       │  ← 字段类型 → 组件映射规则
+│  composition-rules.json           │  ← 组合/嵌套约束
+│  builder-registry/                │  ← 搭建平台: 分类/缩略图/默认值
+└───────────────────────────────────┘
 ```
 
 ---
 
 ## 2 / 关键技术决策
 
-| 决策 | 选择 | 理由 |
-|------|------|------|
-| 包管理 | pnpm workspace + turborepo | 4 个包独立版本，并行构建 |
-| 样式方案 | Tailwind CSS v4 (CSS-first) | shadcn 原生方案，`@theme inline` 直接在 CSS 中注册变量 |
-| UI 原语 | shadcn/ui (Radix UI) | 无障碍、键盘导航、ARIA 开箱即用，组件代码完全可控 |
-| shadcn 基色 | stone | 最接近暖灰色系，CSS 变量覆盖量最小 |
-| 组件命名 | N 前缀 (NButton, NCard) | 明确区分 neuron 业务组件和 shadcn 原语 |
-| Token 单一来源 | tokens.json | 一份文件生成 CSS、TypeScript、JSON 三种格式 |
-| Page Schema 值格式 | Token key 而非原始值 | `"color": "blue"` 而非 `"color": "#BEF1FF"`，强制设计合规 |
-| Builder 状态管理 | Zustand + temporal 中间件 | 轻量，天然支持 undo/redo |
-| 测试 | Vitest + Testing Library | 快速，与 Vite 生态一致 |
-| 组件文档 | Storybook | 业界标准，支持可视化浏览所有变体 |
+| 决策               | 选择                              | 理由                                                      |
+| ------------------ | --------------------------------- | --------------------------------------------------------- |
+| 包管理             | pnpm workspace + turborepo        | 7 个包独立版本，并行构建                                  |
+| 样式方案           | Tailwind CSS v4 (CSS-first)       | shadcn 原生方案，`@theme inline` 直接在 CSS 中注册变量    |
+| UI 原语            | shadcn/ui (Radix UI)              | 无障碍、键盘导航、ARIA 开箱即用，组件代码完全可控         |
+| shadcn 基色        | stone                             | 最接近暖灰色系，CSS 变量覆盖量最小                        |
+| 组件命名           | N 前缀 (NButton, NCard)           | 明确区分 neuron 业务组件和 shadcn 原语                    |
+| Token 单一来源     | tokens.json                       | 一份文件生成 CSS、TypeScript、JSON 三种格式               |
+| Page Schema 值格式 | Token key 而非原始值              | `"color": "blue"` 而非 `"color": "#BEF1FF"`，强制设计合规 |
+| Builder 状态管理   | Zustand + zundo (temporal) 中间件 | 轻量，天然支持 undo/redo                                  |
+| 测试               | Vitest + Testing Library          | 快速，与 Vite 生态一致                                    |
+| 组件文档           | Storybook                         | 业界标准，支持可视化浏览所有变体                          |
 
 ---
 
@@ -101,12 +104,20 @@ neuron-ui/
 │   │   ├── Agentour-base-desgin-ui.md
 │   │   ├── synnovatour-bse-desgin-ui.csv
 │   │   └── shared-design-tokens.md
-│   └── plan/
-│       ├── 00-overview.md
-│       ├── 01-goal-ai-readable.md
-│       ├── 02-goal-drag-and-drop.md
-│       ├── 03-goal-design-system.md
-│       └── 04-architecture.md                 # ← 本文件
+│   ├── plan/
+│   │   ├── 00-overview.md                     # 四目标总览
+│   │   ├── 01-goal-shadcn-design-system.md    # 目标 1: shadcn 二次开发
+│   │   ├── 02-goal-component-api-mapping.md   # 目标 2: 组件-接口映射
+│   │   ├── 03-goal-auto-page-generation.md    # 目标 3: AI 自动生成
+│   │   ├── 04-goal-drag-drop-refinement.md    # 目标 4: 拖拉拽编辑器
+│   │   ├── 05-architecture.md                 # ← 本文件
+│   │   └── 06-architecture-diagrams.md        # 13 张架构图
+│   ├── guides/
+│   │   ├── project-overview.md                # 项目总览
+│   │   └── page-consumption.md                # 页面消费方案
+│   └── dev/
+│       ├── 00-development-roadmap.md          # 开发计划总览
+│       └── 01~08-phase*.md                    # Phase 0-7 详细计划
 │
 ├── packages/
 │   │
@@ -239,6 +250,7 @@ neuron-ui/
 │   │   ├── package.json
 │   │   ├── tsconfig.json
 │   │   ├── component-manifest.json            # AI 入口: 组件清单
+│   │   ├── component-api-mapping.json         # 组件-接口映射规则 (目标 2 核心产物)
 │   │   ├── composition-rules.json             # 组合规则
 │   │   ├── schemas/                           # per-component schema
 │   │   │   ├── _meta.schema.json              # schema 自身的 JSON Schema
@@ -268,40 +280,110 @@ neuron-ui/
 │   │   └── scripts/
 │   │       └── extract-schemas.ts             # 从组件类型自动提取 schema
 │   │
-│   └── page-builder/                          # @neuron-ui/page-builder (app)
+│   ├── page-builder/                          # @neuron-ui/page-builder (app)
+│   │   ├── package.json
+│   │   ├── tsconfig.json
+│   │   ├── vite.config.ts
+│   │   ├── index.html
+│   │   └── src/
+│   │       ├── main.tsx
+│   │       ├── App.tsx
+│   │       ├── stores/
+│   │       │   ├── editor-store.ts            # Zustand + zundo: page tree + undo/redo
+│   │       │   └── selection-store.ts         # 选中状态
+│   │       ├── renderer/
+│   │       │   └── EditorRenderer.tsx         # 基于 json-render Renderer + 编辑器交互层
+│   │       ├── editor/
+│   │       │   ├── Canvas.tsx                 # 拖拽画布
+│   │       │   ├── ComponentPanel.tsx         # 左侧: 组件面板
+│   │       │   ├── PropertyPanel.tsx          # 右侧: 属性编辑
+│   │       │   ├── Breadcrumb.tsx             # 层级路径
+│   │       │   └── Toolbar.tsx                # 撤销/重做/预览/导出
+│   │       ├── property-editors/
+│   │       │   ├── TokenSelect.tsx            # 从 tokens.json 加载的下拉
+│   │       │   ├── SizeInput.tsx
+│   │       │   ├── TextInput.tsx
+│   │       │   ├── VariantSelect.tsx
+│   │       │   ├── ImageUpload.tsx
+│   │       │   ├── SlotEditor.tsx
+│   │       │   └── ToggleEditor.tsx
+│   │       └── templates/
+│   │           └── built-in/
+│   │               ├── activity-page.json
+│   │               └── leaderboard.json
+│   │
+│   ├── generator/                             # @neuron-ui/generator
+│   │   ├── package.json
+│   │   ├── tsconfig.json
+│   │   ├── vite.config.ts                     # library mode
+│   │   └── src/
+│   │       ├── index.ts                       # 导出 generatePage()
+│   │       ├── generate.ts                    # 核心: 调用 AI API 生成 Page Schema
+│   │       ├── prompts/
+│   │       │   ├── system-prompt.ts           # System Prompt (可消费 neuronCatalog.prompt())
+│   │       │   └── examples/                  # Few-shot 示例
+│   │       │       ├── crud-example.json
+│   │       │       ├── dashboard-example.json
+│   │       │       └── detail-example.json
+│   │       ├── context/
+│   │       │   ├── load-mapping.ts            # 加载 component-api-mapping.json
+│   │       │   ├── load-manifest.ts           # 加载 component-manifest.json
+│   │       │   └── load-rules.ts              # 加载 composition-rules.json
+│   │       ├── validator/
+│   │       │   ├── schema-validator.ts        # 复用 runtime Catalog 的 Zod 校验
+│   │       │   ├── binding-validator.ts       # 数据绑定完整性校验
+│   │       │   └── composition-validator.ts   # 组件嵌套校验
+│   │       └── types.ts
+│   │
+│   ├── runtime/                               # @neuron-ui/runtime
+│   │   ├── package.json
+│   │   ├── tsconfig.json
+│   │   ├── vite.config.ts                     # library mode
+│   │   └── src/
+│   │       ├── index.ts                       # 导出 NeuronPage, neuronCatalog, registry 等
+│   │       ├── NeuronPage.tsx                 # 顶层容器
+│   │       ├── catalog/
+│   │       │   ├── neuron-catalog.ts          # createCatalog(): 53 组件 Zod schema (唯一定义源)
+│   │       │   ├── neuron-registry.ts         # defineRegistry(): N-组件 → React 实现
+│   │       │   └── neuron-actions.ts          # action handlers 默认实现
+│   │       ├── adapter/
+│   │       │   ├── schema-adapter.ts          # Page Schema (树形) → json-render UITree (扁平)
+│   │       │   ├── binding-adapter.ts         # binding 协议 → $path / ActionSchema
+│   │       │   └── token-adapter.ts           # Token key → CSS 变量
+│   │       ├── data/
+│   │       │   ├── DataSourceLayer.tsx        # dataSources → API → DataProvider
+│   │       │   └── createDataProvider.ts      # 快捷工厂
+│   │       └── hooks/
+│   │           ├── usePageSchema.ts           # 加载 Page Schema
+│   │           └── useNeuronPage.ts           # 组合 Hook
+│   │
+│   └── codegen/                               # @neuron-ui/codegen (CLI)
 │       ├── package.json
-│       ├── tsconfig.json
-│       ├── vite.config.ts
-│       ├── index.html
+│       ├── bin/
+│       │   └── neuron-codegen.ts              # CLI 入口
 │       └── src/
-│           ├── main.tsx
-│           ├── App.tsx
-│           ├── stores/
-│           │   ├── editor-store.ts            # Zustand: page tree + undo/redo
-│           │   └── selection-store.ts         # 选中状态
-│           ├── renderer/
-│           │   ├── PageRenderer.tsx            # Schema → React 组件树
-│           │   ├── ComponentResolver.tsx       # 组件名 → React 组件
-│           │   ├── PropResolver.ts             # Token key → CSS 变量
-│           │   └── SlotRenderer.tsx            # 子组件按 slot 分组
-│           ├── editor/
-│           │   ├── Canvas.tsx                  # 拖拽画布
-│           │   ├── ComponentPanel.tsx          # 左侧: 组件面板
-│           │   ├── PropertyPanel.tsx           # 右侧: 属性编辑
-│           │   ├── Breadcrumb.tsx              # 层级路径
-│           │   └── Toolbar.tsx                 # 撤销/重做/预览/导出
-│           ├── property-editors/
-│           │   ├── TokenSelect.tsx             # 从 tokens.json 加载的下拉
-│           │   ├── SizeInput.tsx
-│           │   ├── TextInput.tsx
-│           │   ├── VariantSelect.tsx
-│           │   ├── ImageUpload.tsx
-│           │   ├── SlotEditor.tsx
-│           │   └── ToggleEditor.tsx
-│           └── templates/
-│               └── built-in/
-│                   ├── activity-page.json
-│                   └── leaderboard.json
+│           ├── index.ts
+│           ├── cli.ts                         # commander 命令解析
+│           ├── commands/
+│           │   ├── generate.ts                # generate 命令
+│           │   └── update.ts                  # update 命令 (增量更新)
+│           ├── generators/
+│           │   ├── page-generator.ts          # Page Schema → 页面组件 .tsx
+│           │   ├── hooks-generator.ts         # Page Schema → 数据 hooks
+│           │   ├── types-generator.ts         # Page Schema → TypeScript 类型
+│           │   └── component-generator.ts     # 子节点 → 子组件文件
+│           ├── templates/
+│           │   ├── page.ts.hbs                # Handlebars 模板
+│           │   ├── hooks-swr.ts.hbs
+│           │   ├── hooks-query.ts.hbs
+│           │   └── hooks-fetch.ts.hbs
+│           ├── strategies/
+│           │   ├── merge.ts                   # AST 级合并
+│           │   ├── overwrite.ts               # 覆盖 (自动备份)
+│           │   └── diff.ts                    # 差异对比
+│           └── utils/
+│               ├── schema-parser.ts
+│               └── code-formatter.ts          # Prettier 格式化
 │
 └── scripts/                                   # workspace 级脚本
     ├── build-all.ts
@@ -671,7 +753,7 @@ export interface NButtonProps {
   size?: NButtonSize
   color?: AccentColor
   label?: string
-  icon?: ReactNode
+  icon?: string // ★ JSON Serializable: 图标名称 (如 "plus", "search")
   iconPosition?: "left" | "right"
   disabled?: boolean
   className?: string
@@ -686,6 +768,7 @@ export interface NButtonProps {
 import { Button as ShadcnButton } from "../../ui/button"
 import { cn } from "../../lib/utils"
 import type { NButtonProps } from "./NButton.types"
+import { Archive, Plus, Search, Trash } from "lucide-react" // 示例图标
 
 const sizeMap = {
   xs: "h-5",    // 20px
@@ -711,6 +794,14 @@ const colorMap: Record<string, string> = {
   lavender: "bg-accent-lavender hover:bg-accent-lavender/80 text-gray-01",
 }
 
+// ★ Icon Resolver: 字符串 → 组件映射
+const iconMap: Record<string, React.ElementType> = {
+  plus: Plus,
+  search: Search,
+  trash: Trash,
+  archive: Archive,
+}
+
 export function NButton({
   variant = "capsule",
   size = "md",
@@ -725,6 +816,8 @@ export function NButton({
   ...rest
 }: NButtonProps) {
   const shadcnVariant = color ? undefined : "default"
+  // ★ 解析图标
+  const IconComponent = icon ? iconMap[icon] : null
 
   return (
     <ShadcnButton
@@ -743,9 +836,13 @@ export function NButton({
       data-neuron-size={size}
       {...rest}
     >
-      {icon && iconPosition === "left" && <span className="inline-flex shrink-0">{icon}</span>}
+      {IconComponent && iconPosition === "left" && (
+        <span className="inline-flex shrink-0 mr-2"><IconComponent className="w-4 h-4" /></span>
+      )}
       {label || children}
-      {icon && iconPosition === "right" && <span className="inline-flex shrink-0">{icon}</span>}
+      {IconComponent && iconPosition === "right" && (
+        <span className="inline-flex shrink-0 ml-2"><IconComponent className="w-4 h-4" /></span>
+      )}
     </ShadcnButton>
   )
 }
@@ -753,33 +850,33 @@ export function NButton({
 
 ### 组件开发清单 (按优先级)
 
-| 优先级 | 组件 | 关键规格 | shadcn 对应 |
-|--------|------|---------|------------|
-| **P0** | NButton | 胶囊/圆形/异形, h: 20/24/32/36/48px | button |
-| **P0** | NBadge | h: 16/24px, r: 4px | badge |
-| **P0** | NAvatar | 圆形/圆角方形, 描边/在线状态 | avatar |
-| **P0** | NInput | h: 32px, 无效态 | input |
-| **P0** | NText | 7 级字号, 4 级字重 | 无 (自建) |
-| **P1** | NCard | 5 种变体 | card |
-| **P1** | NDialog | 九宫定位, 内边距 20px | dialog |
-| **P1** | NSheet | 侧边推入, w: 396px | sheet |
-| **P1** | NAspectRatio | w: 856px, 可展开收起 | aspect-ratio |
-| **P1** | NScrollArea | 水平/纵向, 行间距 8px | scroll-area |
-| **P2** | NInputGroup | h: 36px, 搜索/tag/下拉 | 无 (自建) |
-| **P2** | NCombobox | 单选/多选, 搜索, 分组 | combobox |
-| **P2** | NCheckbox | 内边距 8px, 行间距 8px | checkbox |
-| **P2** | NRadioGroup | 禁用/警告态 | radio-group |
-| **P2** | NSwitch | h: 18px, w: 40px | switch |
-| **P2** | NTextarea | 856x180px, 内间距 16px | textarea |
-| **P3** | NCalendar | w: 328px, h: 324px | calendar |
-| **P3** | NCarousel | 方向可调 | carousel |
-| **P3** | NDataTable | 排序/过滤, 多变体 | data-table |
-| **P3** | NDropdownMenu | 内边距 16/8px | dropdown-menu |
-| **P3** | NEmpty | 居中, 按钮 136x32px | 无 (自建) |
-| **P4** | NToast | 可点击文字 | toast |
-| **P4** | NToggle | 颜色/大小变化 | toggle |
-| **P4** | NToggleGroup | 横/纵排列, icon 18x18px | toggle-group |
-| **P4** | NResizable | 断点: 1440/1340/1288/928px | resizable |
+| 优先级 | 组件          | 关键规格                            | shadcn 对应   |
+| ------ | ------------- | ----------------------------------- | ------------- |
+| **P0** | NButton       | 胶囊/圆形/异形, h: 20/24/32/36/48px | button        |
+| **P0** | NBadge        | h: 16/24px, r: 4px                  | badge         |
+| **P0** | NAvatar       | 圆形/圆角方形, 描边/在线状态        | avatar        |
+| **P0** | NInput        | h: 32px, 无效态                     | input         |
+| **P0** | NText         | 7 级字号, 4 级字重                  | 无 (自建)     |
+| **P1** | NCard         | 5 种变体                            | card          |
+| **P1** | NDialog       | 九宫定位, 内边距 20px               | dialog        |
+| **P1** | NSheet        | 侧边推入, w: 396px                  | sheet         |
+| **P1** | NAspectRatio  | w: 856px, 可展开收起                | aspect-ratio  |
+| **P1** | NScrollArea   | 水平/纵向, 行间距 8px               | scroll-area   |
+| **P2** | NInputGroup   | h: 36px, 搜索/tag/下拉              | 无 (自建)     |
+| **P2** | NCombobox     | 单选/多选, 搜索, 分组               | combobox      |
+| **P2** | NCheckbox     | 内边距 8px, 行间距 8px              | checkbox      |
+| **P2** | NRadioGroup   | 禁用/警告态                         | radio-group   |
+| **P2** | NSwitch       | h: 18px, w: 40px                    | switch        |
+| **P2** | NTextarea     | 856x180px, 内间距 16px              | textarea      |
+| **P3** | NCalendar     | w: 328px, h: 324px                  | calendar      |
+| **P3** | NCarousel     | 方向可调                            | carousel      |
+| **P3** | NDataTable    | 排序/过滤, 多变体                   | data-table    |
+| **P3** | NDropdownMenu | 内边距 16/8px                       | dropdown-menu |
+| **P3** | NEmpty        | 居中, 按钮 136x32px                 | 无 (自建)     |
+| **P4** | NToast        | 可点击文字                          | toast         |
+| **P4** | NToggle       | 颜色/大小变化                       | toggle        |
+| **P4** | NToggleGroup  | 横/纵排列, icon 18x18px             | toggle-group  |
+| **P4** | NResizable    | 断点: 1440/1340/1288/928px          | resizable     |
 
 ---
 
@@ -819,7 +916,7 @@ composition-rules.json (组件嵌套规则)
       "canBeChildOf": ["NDialog", "NCard", "NTextarea", "NEmpty", "NAspectRatio"],
       "canContain": []
     }
-    // ... 其余 25+ 组件
+    // ... 其余组件 (共 53 个)
   ]
 }
 ```
@@ -837,12 +934,12 @@ composition-rules.json (组件嵌套规则)
     },
     {
       "parent": "NCard",
-      "allowedChildren": ["NImage", "NText", "NBadge", "NAvatar", "NButton", "NIcon"],
+      "allowedChildren": ["NAspectRatio", "NText", "NBadge", "NAvatar", "NButton", "NSeparator"],
       "constraints": { "maxBadges": 3, "mediaPosition": ["top", "left", "full"] }
     },
     {
       "parent": "NScrollArea",
-      "allowedChildren": ["NCard", "NImage", "NIcon", "NText", "NAvatar"],
+      "allowedChildren": ["NCard", "NAspectRatio", "NText", "NAvatar", "NBadge"],
       "constraints": { "direction": ["horizontal", "vertical"], "itemGap": "var(--spacing-sm)" }
     }
   ],
@@ -870,7 +967,7 @@ AI 生成和拖拉拽编辑器共享同一格式：
     "id": "activity-001",
     "name": "燕缘·滴水湖站活动页",
     "width": 1440,
-    "breakpoints": { "desktop": 1440, "tablet": 1288, "mobile": 928 }
+    "breakpoints": { "desktop": 1440, "tablet": 1288, "compact": 928 }
   },
   "tree": [
     {
@@ -883,7 +980,7 @@ AI 生成和拖拉拽编辑器共享同一格式：
           "component": "NCard",
           "props": { "variant": "cover-top", "width": "416px", "radius": "xl" },
           "children": [
-            { "id": "img-1", "component": "NImage", "slot": "media", "props": { "src": "cover.jpg", "height": "268px" } },
+            { "id": "img-1", "component": "NAspectRatio", "slot": "media", "props": { "src": "cover.jpg", "ratio": "16/9" } },
             { "id": "title", "component": "NText", "slot": "body", "props": { "content": "第一届协创大赛", "fontSize": "body" } },
             { "id": "badge-1", "component": "NBadge", "slot": "badges", "props": { "label": "进行中", "color": "lime-light" } }
           ]
@@ -899,31 +996,34 @@ AI 生成和拖拉拽编辑器共享同一格式：
 - 组件嵌套必须符合 `composition-rules.json`
 - 每个节点有稳定 `id`，供编辑器选中/编辑
 
-### PageRenderer 架构
+### 统一渲染架构 (基于 json-render)
+
+编辑器 (`@neuron-ui/page-builder`) 和运行时渲染器 (`@neuron-ui/runtime`) **共用同一套 json-render 渲染机制**，避免维护两套渲染系统：
 
 ```
-PageRenderer.tsx
+json-render 渲染管线 (编辑器 + 运行时共用)
     │
-    ├── ComponentResolver.tsx
-    │     "NButton" → lazy(() => import('NButton'))
-    │     维护 COMPONENT_MAP 注册表
+    ├── neuron-catalog.ts (Zod Schema)
+    │     53 个 N-组件的 props 定义 (唯一定义源)
+    │     9 个 Action 定义
+    │     catalog.prompt() → AI 系统提示词
+    │     catalog.validateElement() → props 校验
     │
-    ├── PropResolver.ts
-    │     Token key → CSS 变量
-    │     "blue" → "var(--accent-blue)"
-    │     "xl"   → "var(--radius-xl)"
-    │     "body" → "var(--font-size-body)"
+    ├── neuron-registry.ts (React 实现)
+    │     NButton → <NButton ... />
+    │     NDataTable → useDataValue() + <NDataTable ... />
+    │     ... 53 个组件全部映射
     │
-    ├── SlotRenderer.tsx
-    │     将 children 按 slot 字段分组
-    │     注入父组件的对应 slot prop
+    ├── schema-adapter.ts (格式转换)
+    │     Page Schema (嵌套树) → UITree (扁平邻接表)
+    │     binding 协议 → $path / ActionSchema
+    │     Token key → CSS 变量值
     │
-    └── RenderNode (递归)
-          1. 解析组件
-          2. 解析 props
-          3. 分组 children by slot
-          4. 渲染 <Component {...props}>{children}</Component>
+    └── <Renderer tree={uiTree} registry={registry} />
+          json-render 递归渲染 React 组件树
 ```
+
+**编辑器额外包装层：** `EditorRenderer` 在 json-render `Renderer` 之上添加选中高亮、拖拽手柄、层级面包屑等编辑交互，但底层渲染完全复用 json-render。
 
 ---
 
@@ -932,7 +1032,13 @@ PageRenderer.tsx
 ### 包依赖顺序
 
 ```
-tokens (0 依赖) → components (依赖 tokens) → metadata (依赖 components) → page-builder (依赖全部)
+tokens (0 依赖)
+  → components (依赖 tokens)
+    → metadata (依赖 components)
+      → generator (依赖 metadata + runtime)
+    → runtime (依赖 components + metadata)
+    → codegen (依赖 components + metadata)
+  → page-builder (依赖 components + metadata + runtime)
 ```
 
 ### 构建命令
@@ -976,7 +1082,10 @@ tokens.json (手动维护)
 ```
 @neuron-ui/tokens       → npm publish (CSS + TS 常量)
 @neuron-ui/components   → npm publish (React 组件 + 样式)
-@neuron-ui/metadata     → npm publish (JSON Schema + 校验器)
+@neuron-ui/metadata     → npm publish (JSON 元数据 + 校验器)
+@neuron-ui/generator    → npm publish (AI 生成引擎)
+@neuron-ui/runtime      → npm publish (json-render 运行时渲染器)
+@neuron-ui/codegen      → npm publish (代码生成 CLI)
 @neuron-ui/page-builder → 部署为 Web App (不发 npm)
 ```
 
@@ -1027,9 +1136,9 @@ import { NButton, NCard, NBadge } from "@neuron-ui/components";
 { "id": "btn-1", "component": "NButton", "props": { "variant": "capsule", "size": "md", "color": "blue", "label": "提交" } }
 ```
 
-### PageRenderer: 渲染
+### json-render 渲染
 
-`ComponentResolver("NButton")` → NButton 组件 → `PropResolver` 透传 (NButton 内部解析 Token key) → 最终渲染 32px 高的蓝色胶囊按钮
+json-render `registry("NButton")` → NButton React 实现 → Token key 透传 (NButton 内部解析) → 最终渲染 32px 高的蓝色胶囊按钮
 
 ### 视觉结果
 

@@ -155,8 +155,13 @@ packages/runtime/
 import { createCatalog, ActionSchema } from '@json-render/core'
 import { z } from 'zod'
 
-// Token 枚举 (从 @neuron-ui/tokens 导入)
-const ColorToken = z.enum(['blue', 'green', 'pink', 'yellow', 'purple', 'error', 'warning', 'success'])
+// Token 枚举 (与 @neuron-ui/tokens 中的设计规范一致)
+// 10 个强调色 + 3 个语义色
+const ColorToken = z.enum([
+  'pink', 'yellow', 'lime', 'green', 'blue', 'purple',
+  'lavender', 'pink-light', 'yellow-bright', 'lime-light',
+  'error', 'warning', 'success'
+])
 const SizeToken = z.enum(['xs', 'sm', 'md', 'lg', 'xl'])
 
 export const neuronCatalog = createCatalog({
@@ -301,18 +306,26 @@ json-render 的 `DataProvider` 管理响应式数据模型，neuron-ui 在此之
 ```typescript
 // data/DataSourceLayer.tsx
 function DataSourceLayer({ schema, dataProvider, children }) {
-  const initialData = {}
+  const [dataModel, setDataModel] = useState({})
 
-  // 遍历 dataSources，发起请求，填充 DataProvider 的数据模型
-  for (const [key, ds] of Object.entries(schema.dataSources)) {
-    // "competitionList": { api: "GET /api/competitions", params: {...} }
-    // → DataProvider 数据路径: /dataSources/competitionList
-    const data = await dataProvider.fetch(parseApi(ds.api), ds.params)
-    initialData[`/dataSources/${key}`] = data
-  }
+  // 初始化: 遍历 dataSources 声明, 逐个请求
+  useEffect(() => {
+    const init = async () => {
+      const model = {}
+      for (const [key, ds] of Object.entries(schema.dataSources)) {
+        // "competitionList": { api: "GET /api/competitions", params: {...} }
+        // → DataProvider 数据路径: /dataSources/competitionList
+        const { method, path } = parseApi(ds.api)
+        const data = await dataProvider.fetch({ method, path }, ds.params)
+        model[`/dataSources/${key}`] = data
+      }
+      setDataModel(model)
+    }
+    init()
+  }, [schema.dataSources])
 
   return (
-    <DataProvider initialData={initialData}>
+    <DataProvider initialData={dataModel}>
       <ActionProvider handlers={buildActionHandlers(schema, dataProvider)}>
         {children}
       </ActionProvider>
@@ -413,19 +426,19 @@ Page Schema JSON
 
 ```bash
 # 从 Page Schema 生成代码
-npx @neuron-ui/codegen generate ./schemas/competition-list.json \
+npx neuron-codegen generate ./schemas/competition-list.json \
   --outdir src/pages/competitions \
   --style hooks        # hooks | swr | react-query
   --api-client axios   # axios | fetch | ky
 
 # 批量生成
-npx @neuron-ui/codegen generate ./schemas/*.json --outdir src/pages/
+npx neuron-codegen generate ./schemas/*.json --outdir src/pages/
 
 # 查看变更 (不写入文件)
-npx @neuron-ui/codegen generate ./schemas/competition-list.json --dry-run
+npx neuron-codegen generate ./schemas/competition-list.json --dry-run
 
 # 更新 (保留手动修改, 只添加新字段/组件)
-npx @neuron-ui/codegen update ./schemas/competition-list.json \
+npx neuron-codegen update ./schemas/competition-list.json \
   --outdir src/pages/competitions \
   --strategy merge     # merge | overwrite | diff
 ```

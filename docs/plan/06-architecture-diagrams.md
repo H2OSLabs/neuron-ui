@@ -72,7 +72,7 @@
 │  │  任意 API 列表 ──►          │      │  │ Canvas (拖拽画布)      │  │      │
 │  │  任意 TaskCase ──► AI ──►  │─────►│  │ PropertyPanel (属性)  │  │      │
 │  │  映射规则(参考) Page Schema │      │  │ ComponentPanel (组件)  │  │      │
-│  │                             │      │  │ PageRenderer (渲染)    │  │      │
+│  │                             │      │  │ Renderer (json-render) │  │      │
 │  └─────────────────────────────┘      │  └───────────────────────┘  │      │
 │                                        └─────────────────────────────┘      │
 │                                                    │                        │
@@ -442,8 +442,8 @@
 │  │ ComponentPanel│  │         Canvas (画布)          │  │ PropertyPanel  │  │
 │  │ (左侧组件面板) │  │                               │  │ (右侧属性面板) │  │
 │  │               │  │  ┌─────────────────────────┐   │  │                │  │
-│  │ ┌───────────┐ │  │  │  PageRenderer           │   │  │ 选中: NButton │  │
-│  │ │ 展示组件  │ │  │  │  (Page Schema → React)  │   │  │                │  │
+│  │ ┌───────────┐ │  │  │  EditorRenderer          │   │  │ 选中: NButton │  │
+│  │ │ 展示组件  │ │  │  │  (json-render Renderer)  │   │  │                │  │
 │  │ │ NDataTable│ │  │  │                          │   │  │ variant:      │  │
 │  │ │ NCard     │ │  │  │  ┌──────────────────┐   │   │  │ [capsule ▼]   │  │
 │  │ │ NChart    │ │  │  │  │ NDataTable       │   │   │  │               │  │
@@ -474,7 +474,7 @@
 ├─── 状态管理 ────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │  Zustand + temporal 中间件                                           │   │
+│  │  Zustand + zundo (temporal) 中间件                                    │   │
 │  │                                                                      │   │
 │  │  editor-store.ts:                                                    │   │
 │  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐               │   │
@@ -494,9 +494,9 @@
 │  Page Schema (JSON)                                                         │
 │       │                                                                     │
 │       ▼                                                                     │
-│  PageRenderer ─── ComponentResolver ── "NButton" → lazy(() => import(...)) │
-│       │           PropResolver ─────── "blue" → "var(--accent-blue)"       │
-│       │           SlotRenderer ──────── children 按 slot 分组注入           │
+│  json-render ──── Catalog ──────────── Zod props 校验 (53 组件)            │
+│       │           Registry ──────────── "NButton" → <NButton ... />        │
+│       │           SchemaAdapter ──────── Page Schema → UITree 扁平化       │
 │       ▼                                                                     │
 │  React 组件树 → DOM → 画布渲染                                              │
 │                                                                             │

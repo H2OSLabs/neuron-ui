@@ -33,6 +33,16 @@ Runtime 渲染器基于 Vercel **json-render** 框架 (`@json-render/core` + `@j
 
 **额外收益:** `catalog.prompt()` 可与 `@neuron-ui/generator` 联动，自动生成 AI 的系统提示词 (组件清单 + props schema + action 列表)，替代手工维护的 component-manifest 部分。
 
+### json-render 可用性风险评估
+
+| 风险 | 说明 | 缓解措施 |
+|------|------|---------|
+| 包可能未发布/实验性 | `@json-render/core` 和 `@json-render/react` 可能仍处于 Vercel 内部实验阶段，npm 包名可能不同 | 在 Phase 7A 启动前验证实际 npm 包名和 API 稳定性；若不可用，参考其设计理念自建轻量渲染层 |
+| API 可能有 Breaking Change | 框架早期版本 API 不稳定 | 通过 adapter 层隔离 json-render API，业务代码不直接依赖 json-render 内部接口 |
+| 社区维护不确定 | Vercel 可能停止维护 | adapter 层的抽象使得可替换为其他 JSON → React 渲染方案 (如自建 ~500 行的轻量渲染器) |
+
+**降级方案:** 若 json-render 不可用，核心渲染逻辑 (Catalog Zod 校验 + Registry 组件映射 + 递归渲染) 可在 ~500-800 行代码内自建实现。Adapter 层设计已预留这一切换空间。
+
 ---
 
 ## Phase 7A: Runtime 渲染器 (@neuron-ui/runtime)

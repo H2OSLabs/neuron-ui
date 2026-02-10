@@ -1,12 +1,13 @@
-# Phase 6: 集成测试 + 端到端验证
+# Phase 6: 集成测试 + 端到端验证 + 全链路验收
 
-> 全链路打通：API 输入 → AI 生成 → 编辑器渲染 → 可视化调整 → 导出。
+> 全链路打通：API 输入 → AI 生成 → 编辑器渲染 → 可视化调整 → 消费层渲染/代码生成 → 导出。
+> 本阶段同时承担全链路验收职责 (原 Phase 8 合并至此)。
 
 ---
 
 ## 依赖
 
-- 全部 Phase 0-5 完成
+- 全部 Phase 0-5 + Phase 7 完成
 
 ## 端到端测试场景
 
@@ -77,17 +78,109 @@
 | 撤销/重做响应 | ≤ 50ms |
 | 组件懒加载 | 按需, 首屏 ≤ 3 秒 |
 
+## 测试策略
+
+采用 **自动化单元测试 + 手动 QA** 的双轨模式：
+
+### 自动化测试框架
+
+| 层面 | 工具 | 说明 |
+|------|------|------|
+| 单元测试 | **Vitest** + Testing Library | 与 Vite 生态一致，对组件/hooks/工具函数进行单元级覆盖 |
+| 组件测试 | Vitest + `@testing-library/react` | 渲染组件 → 断言 DOM 输出 + 交互行为 |
+| Schema 校验测试 | Vitest | 验证 Page Schema 校验器 (Zod) 的正确性，覆盖合法/非法输入 |
+| 快照测试 | Vitest snapshot | 对关键渲染结果做快照回归，防止意外变更 |
+| 端到端自动化 | **Playwright** | 浏览器级自动化测试: 编辑器画布交互、拖拽、导出等全链路场景 |
+
+### 自动化测试覆盖范围
+
+```
+packages/tokens/          → Vitest: Token 生成脚本输出正确性
+packages/components/      → Vitest + Testing Library: 53 组件渲染 + 交互 (覆盖率 ≥ 80%)
+packages/metadata/        → Vitest: 校验器对合法/非法 Schema 的判断
+packages/runtime/         → Vitest: Catalog 注册、SchemaAdapter 转换、DataSourceLayer 数据注入
+packages/generator/       → Vitest: AI 输出解析、校验器、自动修复逻辑
+packages/codegen/         → Vitest: 模板生成、代码格式化、merge 策略
+packages/page-builder/    → Playwright: 画布渲染、拖拽排序、属性编辑、撤销/重做、导出
+```
+
+### 手动 QA 检查清单
+
+以下场景需人工验证 (自动化难以覆盖的体验/视觉层面)：
+
+- [ ] 运营人员 5 分钟内可完成对自动生成页面的微调 (可用性)
+- [ ] 拖拽操作流畅无卡顿 (性能体感)
+- [ ] 三种预览模式 (桌面/平板/多功能区收起) 视觉正确
+- [ ] 非技术人员可独立理解编辑器界面 (UX)
+- [ ] AI 对不同格式输入的生成质量一致性 (主观评判)
+
 ## 回归测试
 
-每次修改后需验证:
+每次修改后 CI 自动运行:
 
+- [ ] `pnpm test` — 全部 Vitest 单元/组件测试通过
+- [ ] `pnpm lint` — 代码风格无错误
 - [ ] Token 生成脚本正常运行
 - [ ] 所有组件 Storybook 渲染正确
-- [ ] 组件单测全部通过 (覆盖率 ≥ 80%)
-- [ ] Page Schema 校验器正确工作
+- [ ] Page Schema 校验器 (Zod) 正确工作
 - [ ] AI 生成 → 校验 → 编辑器加载 全链路通过
 - [ ] 撤销/重做正确
 - [ ] 组件替换保留数据绑定
+- [ ] Runtime `<NeuronPage>` 可正确渲染 Page Schema
+- [ ] CodeGen 生成的 .tsx 可编译运行
+
+## CI/CD 配置
+
+### GitHub Actions 流水线
+
+```yaml
+# .github/workflows/ci.yml
+name: CI
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm test -- --coverage
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: npx playwright install --with-deps
+      - run: pnpm --filter @neuron-ui/page-builder test:e2e
+```
+
+### CI 触发规则
+
+| 事件 | 运行内容 |
+|------|---------|
+| Push to main | lint + test + e2e + Storybook 构建 |
+| Pull Request | lint + test |
+| Release tag | lint + test + e2e + npm publish |
 
 ## 最终验收标准
 
@@ -99,3 +192,6 @@
 | 4 | 非技术人员可独立完成页面微调 |
 | 5 | 设计 Token 在全链路中被严格遵守 |
 | 6 | Page Schema 可导出为标准 JSON |
+| 7 | `<NeuronPage>` 可正确渲染 CRUD/Dashboard/Detail 页面 (Runtime) |
+| 8 | `neuron-codegen generate` 可生成可编译运行的 .tsx (CodeGen) |
+| 9 | 所有自动化测试通过 (Vitest 覆盖率 ≥ 80%, Playwright E2E 通过) |
