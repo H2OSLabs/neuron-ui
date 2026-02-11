@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NAlertProps",
+  "description": "Props for the NAlert component. A prominent message banner for displaying important information, warnings, errors, or success feedback.",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "The bold heading text of the alert"
+    },
+    "description": {
+      "type": "string",
+      "description": "The body text of the alert message"
+    },
+    "variant": {
+      "type": "string",
+      "description": "The visual style variant indicating the alert severity",
+      "enum": ["info", "warning", "error", "success"]
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names for custom styling"
+    }
+  },
+  "required": ["description"],
+  "additionalProperties": false
+}

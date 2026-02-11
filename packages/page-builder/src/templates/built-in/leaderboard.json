@@ -1,0 +1,120 @@
+{
+  "version": "1.0.0",
+  "page": {
+    "id": "leaderboard",
+    "name": "排行榜",
+    "description": "数据排行榜页面模板",
+    "route": "/leaderboard"
+  },
+  "dataSources": {
+    "rankings": {
+      "api": "GET /api/rankings",
+      "params": { "limit": 50 },
+      "autoFetch": true
+    }
+  },
+  "tree": [
+    {
+      "id": "root",
+      "component": "NResizable",
+      "props": { "direction": "vertical" },
+      "children": [
+        {
+          "id": "header",
+          "component": "NCard",
+          "props": { "variant": "default" },
+          "children": [
+            {
+              "id": "title",
+              "component": "NText",
+              "props": { "text": "排行榜", "size": "heading", "weight": "bold" }
+            },
+            {
+              "id": "tabs",
+              "component": "NTabs",
+              "props": {
+                "tabs": [
+                  { "id": "daily", "label": "日榜" },
+                  { "id": "weekly", "label": "周榜" },
+                  { "id": "monthly", "label": "月榜" }
+                ],
+                "defaultValue": "daily"
+              }
+            }
+          ]
+        },
+        {
+          "id": "stats-row",
+          "component": "NResizable",
+          "props": { "direction": "horizontal" },
+          "children": [
+            {
+              "id": "stat-1",
+              "component": "NCard",
+              "props": { "variant": "default" },
+              "children": [
+                {
+                  "id": "stat-1-label",
+                  "component": "NText",
+                  "props": { "text": "总参与人数", "size": "body", "color": "muted" }
+                },
+                {
+                  "id": "stat-1-value",
+                  "component": "NText",
+                  "props": { "text": "12,345", "size": "heading", "weight": "bold" }
+                }
+              ]
+            },
+            {
+              "id": "stat-2",
+              "component": "NCard",
+              "props": { "variant": "default" },
+              "children": [
+                {
+                  "id": "stat-2-label",
+                  "component": "NText",
+                  "props": { "text": "今日新增", "size": "body", "color": "muted" }
+                },
+                {
+                  "id": "stat-2-value",
+                  "component": "NText",
+                  "props": { "text": "256", "size": "heading", "weight": "bold" }
+                }
+              ]
+            },
+            {
+              "id": "stat-3",
+              "component": "NCard",
+              "props": { "variant": "default" },
+              "children": [
+                {
+                  "id": "stat-3-label",
+                  "component": "NText",
+                  "props": { "text": "最高分", "size": "body", "color": "muted" }
+                },
+                {
+                  "id": "stat-3-value",
+                  "component": "NText",
+                  "props": { "text": "98.7", "size": "heading", "weight": "bold" }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ranking-table",
+          "component": "NDataTable",
+          "props": {
+            "columns": [
+              { "key": "rank", "label": "排名" },
+              { "key": "name", "label": "名称" },
+              { "key": "score", "label": "得分" },
+              { "key": "change", "label": "变化" }
+            ]
+          },
+          "binding": { "dataSource": "rankings", "field": "items" }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NSwitchProps",
+  "description": "Props for the NSwitch component. A toggle switch for binary on/off states, commonly used for settings and preferences.",
+  "type": "object",
+  "properties": {
+    "label": {
+      "type": "string",
+      "description": "Text label displayed next to the switch"
+    },
+    "checked": {
+      "type": "boolean",
+      "description": "Whether the switch is currently in the on state"
+    },
+    "disabled": {
+      "type": "boolean",
+      "description": "Whether the switch is disabled and non-interactive"
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names for custom styling"
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

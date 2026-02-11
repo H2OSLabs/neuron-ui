@@ -1,0 +1,130 @@
+{
+  "version": "1.0.0",
+  "rules": [
+    {
+      "parent": "NDialog",
+      "allowedChildren": [
+        "NField", "NInput", "NTextarea", "NSelect", "NCombobox",
+        "NCheckbox", "NRadioGroup", "NSwitch", "NDatePicker", "NSlider",
+        "NButton", "NText", "NCard", "NScrollArea", "NSeparator", "NAlert"
+      ],
+      "constraints": {
+        "maxButtons": 3,
+        "buttonPlacement": "footer"
+      }
+    },
+    {
+      "parent": "NAlertDialog",
+      "allowedChildren": [
+        "NText"
+      ],
+      "constraints": {
+        "confirmRequired": true
+      }
+    },
+    {
+      "parent": "NSheet",
+      "allowedChildren": [
+        "NField", "NInput", "NTextarea", "NSelect", "NCombobox",
+        "NCheckbox", "NRadioGroup", "NSwitch", "NDatePicker", "NSlider",
+        "NButton", "NText", "NScrollArea", "NSeparator"
+      ],
+      "constraints": {}
+    },
+    {
+      "parent": "NDrawer",
+      "allowedChildren": [
+        "NField", "NInput", "NTextarea", "NSelect", "NCombobox",
+        "NButton", "NText", "NScrollArea"
+      ],
+      "constraints": {}
+    },
+    {
+      "parent": "NCard",
+      "allowedChildren": [
+        "NText", "NBadge", "NAvatar", "NButton", "NInput",
+        "NProgress", "NChart", "NSeparator", "NSpinner", "NCalendar",
+        "NAccordion", "NEmpty", "NSkeleton", "NHoverCard"
+      ],
+      "constraints": {}
+    },
+    {
+      "parent": "NTabs",
+      "allowedChildren": [
+        "NCard", "NDataTable", "NText", "NAccordion", "NChart",
+        "NScrollArea", "NDialog", "NSheet"
+      ],
+      "constraints": {}
+    },
+    {
+      "parent": "NScrollArea",
+      "allowedChildren": [
+        "NCard", "NText", "NBadge", "NAvatar", "NButton",
+        "NSeparator", "NField", "NDataTable", "NEmpty", "NSkeleton"
+      ],
+      "constraints": {}
+    },
+    {
+      "parent": "NResizable",
+      "allowedChildren": [
+        "NCard", "NDataTable", "NChart", "NTabs", "NSidebar",
+        "NScrollArea", "NBreadcrumb", "NText", "NButton", "NPagination",
+        "NDialog", "NSheet", "NAlertDialog", "NMenubar", "NNavigationMenu",
+        "NCalendar", "NEmpty"
+      ],
+      "constraints": {}
+    },
+    {
+      "parent": "NCollapsible",
+      "allowedChildren": [
+        "NText", "NButton", "NInput", "NSeparator"
+      ],
+      "constraints": {}
+    },
+    {
+      "parent": "NField",
+      "allowedChildren": [
+        "NInput", "NTextarea", "NSelect", "NCombobox",
+        "NCheckbox", "NRadioGroup", "NSwitch", "NDatePicker",
+        "NSlider", "NInputOTP"
+      ],
+      "constraints": {
+        "maxChildren": 1
+      }
+    },
+    {
+      "parent": "NHoverCard",
+      "allowedChildren": [
+        "NText", "NBadge", "NAvatar"
+      ],
+      "constraints": {}
+    },
+    {
+      "parent": "NPopover",
+      "allowedChildren": [
+        "NText", "NButton", "NInput", "NSelect"
+      ],
+      "constraints": {}
+    },
+    {
+      "parent": "NInputGroup",
+      "allowedChildren": [
+        "NInput", "NSelect", "NCombobox"
+      ],
+      "constraints": {}
+    },
+    {
+      "parent": "NSidebar",
+      "allowedChildren": [
+        "NButton", "NText", "NSeparator", "NAvatar"
+      ],
+      "constraints": {}
+    }
+  ],
+  "globalConstraints": {
+    "colorsMustBeTokens": true,
+    "spacingMustBeTokens": true,
+    "maxNestingDepth": 6,
+    "rootContainers": ["NResizable", "NAspectRatio", "NDialog", "NSheet", "NCard"]
+  }
+}

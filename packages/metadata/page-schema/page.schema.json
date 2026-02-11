@@ -1,0 +1,159 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PageSchema",
+  "description": "neuron-ui Page Schema 定义 — AI 生成引擎输出格式，页面构建器和消费层的统一数据协议",
+  "type": "object",
+  "required": ["version", "page", "tree"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Schema 版本号 (semver)",
+      "default": "1.0.0"
+    },
+    "page": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "页面唯一标识"
+        },
+        "name": {
+          "type": "string",
+          "description": "页面名称"
+        },
+        "description": {
+          "type": "string",
+          "description": "页面描述"
+        },
+        "route": {
+          "type": "string",
+          "description": "路由路径"
+        }
+      }
+    },
+    "dataSources": {
+      "type": "object",
+      "description": "数据源定义，键为数据源名称",
+      "additionalProperties": {
+        "$ref": "#/definitions/DataSource"
+      }
+    },
+    "tree": {
+      "type": "array",
+      "description": "组件树 (嵌套结构)",
+      "items": {
+        "$ref": "#/definitions/TreeNode"
+      },
+      "minItems": 1
+    }
+  },
+  "definitions": {
+    "DataSource": {
+      "type": "object",
+      "required": ["api"],
+      "properties": {
+        "api": {
+          "type": "string",
+          "description": "API 端点 (如 'GET /api/users')"
+        },
+        "method": {
+          "type": "string",
+          "enum": ["GET", "POST", "PUT", "PATCH", "DELETE"],
+          "default": "GET"
+        },
+        "params": {
+          "type": "object",
+          "description": "API 查询参数",
+          "additionalProperties": true
+        },
+        "body": {
+          "type": "object",
+          "description": "API 请求体 (POST/PUT)",
+          "additionalProperties": true
+        },
+        "transform": {
+          "type": "string",
+          "description": "响应数据转换表达式 (如 'data.items')"
+        },
+        "autoFetch": {
+          "type": "boolean",
+          "description": "是否自动请求",
+          "default": true
+        }
+      }
+    },
+    "Binding": {
+      "type": "object",
+      "description": "数据绑定配置",
+      "properties": {
+        "dataSource": {
+          "type": "string",
+          "description": "绑定的数据源名称 (对应 dataSources 中的 key)"
+        },
+        "field": {
+          "type": "string",
+          "description": "绑定的字段路径 (如 'name', 'address.city')"
+        },
+        "onChange": {
+          "type": "string",
+          "description": "值变化时触发的数据源操作"
+        },
+        "onClick": {
+          "type": "string",
+          "description": "点击时触发的数据源操作"
+        },
+        "onSubmit": {
+          "type": "string",
+          "description": "提交时触发的数据源操作"
+        },
+        "onConfirm": {
+          "type": "string",
+          "description": "确认时触发的数据源操作"
+        },
+        "prefill": {
+          "type": "object",
+          "description": "编辑表单预填数据映射",
+          "properties": {
+            "dataSource": { "type": "string" },
+            "fieldMap": {
+              "type": "object",
+              "additionalProperties": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "TreeNode": {
+      "type": "object",
+      "required": ["id", "component"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "节点唯一标识"
+        },
+        "component": {
+          "type": "string",
+          "description": "neuron 组件名称 (如 'NCard', 'NDataTable')",
+          "pattern": "^N[A-Z][a-zA-Z]*$"
+        },
+        "props": {
+          "type": "object",
+          "description": "组件静态 props",
+          "additionalProperties": true
+        },
+        "binding": {
+          "$ref": "#/definitions/Binding"
+        },
+        "children": {
+          "type": "array",
+          "description": "子组件节点",
+          "items": {
+            "$ref": "#/definitions/TreeNode"
+          }
+        }
+      }
+    }
+  }
+}

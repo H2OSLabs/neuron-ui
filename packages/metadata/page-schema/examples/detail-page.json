@@ -1,0 +1,155 @@
+{
+  "version": "1.0.0",
+  "page": {
+    "id": "user-detail",
+    "name": "用户详情",
+    "description": "用户详情页，包含基本信息和关联数据",
+    "route": "/admin/users/:id"
+  },
+  "dataSources": {
+    "userDetail": {
+      "api": "GET /api/users/:id",
+      "autoFetch": true
+    },
+    "userOrders": {
+      "api": "GET /api/users/:id/orders",
+      "params": { "page": 1, "pageSize": 10 },
+      "autoFetch": true
+    },
+    "userActivities": {
+      "api": "GET /api/users/:id/activities",
+      "params": { "limit": 20 },
+      "autoFetch": true
+    }
+  },
+  "tree": [
+    {
+      "id": "root",
+      "component": "NResizable",
+      "props": { "direction": "vertical" },
+      "children": [
+        {
+          "id": "breadcrumb",
+          "component": "NBreadcrumb",
+          "props": {
+            "items": [
+              { "label": "首页", "href": "/" },
+              { "label": "用户管理", "href": "/admin/users" },
+              { "label": "用户详情" }
+            ]
+          }
+        },
+        {
+          "id": "header-card",
+          "component": "NCard",
+          "props": { "variant": "profile" },
+          "children": [
+            {
+              "id": "user-avatar",
+              "component": "NAvatar",
+              "props": { "size": "lg", "shape": "circle" },
+              "binding": { "dataSource": "userDetail", "field": "avatar" }
+            },
+            {
+              "id": "user-name",
+              "component": "NText",
+              "props": { "size": "heading", "weight": "bold" },
+              "binding": { "dataSource": "userDetail", "field": "name" }
+            },
+            {
+              "id": "user-email",
+              "component": "NText",
+              "props": { "size": "body", "color": "muted" },
+              "binding": { "dataSource": "userDetail", "field": "email" }
+            },
+            {
+              "id": "user-role-badge",
+              "component": "NBadge",
+              "props": { "color": "blue" },
+              "binding": { "dataSource": "userDetail", "field": "role" }
+            },
+            {
+              "id": "user-status-badge",
+              "component": "NBadge",
+              "props": { "color": "green" },
+              "binding": { "dataSource": "userDetail", "field": "status" }
+            },
+            {
+              "id": "action-menu",
+              "component": "NDropdownMenu",
+              "props": {
+                "triggerLabel": "操作",
+                "items": [
+                  { "label": "编辑" },
+                  { "label": "重置密码" },
+                  { "label": "禁用账户" }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "detail-tabs",
+          "component": "NTabs",
+          "props": {
+            "tabs": [
+              { "id": "info", "label": "基本信息" },
+              { "id": "orders", "label": "订单记录" },
+              { "id": "activities", "label": "活动日志" }
+            ],
+            "defaultValue": "info"
+          },
+          "children": [
+            {
+              "id": "info-tab",
+              "component": "NCard",
+              "props": { "variant": "default" },
+              "children": [
+                {
+                  "id": "info-phone",
+                  "component": "NText",
+                  "props": { "size": "body" },
+                  "binding": { "dataSource": "userDetail", "field": "phone" }
+                },
+                {
+                  "id": "info-address",
+                  "component": "NText",
+                  "props": { "size": "body" },
+                  "binding": { "dataSource": "userDetail", "field": "address" }
+                },
+                {
+                  "id": "info-created",
+                  "component": "NText",
+                  "props": { "size": "caption", "color": "muted" },
+                  "binding": { "dataSource": "userDetail", "field": "createdAt" }
+                }
+              ]
+            },
+            {
+              "id": "orders-tab",
+              "component": "NDataTable",
+              "props": {
+                "columns": [
+                  { "key": "orderId", "label": "订单号" },
+                  { "key": "product", "label": "商品" },
+                  { "key": "amount", "label": "金额", "sortable": true },
+                  { "key": "status", "label": "状态" },
+                  { "key": "date", "label": "日期", "sortable": true }
+                ]
+              },
+              "binding": { "dataSource": "userOrders", "field": "data" }
+            },
+            {
+              "id": "activities-tab",
+              "component": "NAccordion",
+              "props": {
+                "items": []
+              },
+              "binding": { "dataSource": "userActivities", "field": "data" }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

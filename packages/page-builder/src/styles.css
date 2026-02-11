@@ -1,0 +1,58 @@
+@import 'tailwindcss';
+@import '../../tokens/css/colors.css';
+@import '../../tokens/css/spacing.css';
+@import '../../tokens/css/radius.css';
+@import '../../tokens/css/typography.css';
+
+/* Editor-specific styles */
+
+.editor-node-wrapper {
+  position: relative;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  transition: outline-color 0.15s ease;
+}
+
+.editor-node-wrapper:hover {
+  outline-color: var(--blue);
+  outline-style: dashed;
+}
+
+.editor-node-wrapper[data-selected='true'] {
+  outline-color: var(--blue);
+  outline-style: solid;
+}
+
+.editor-node-wrapper[data-selected='true']::before {
+  content: attr(data-component-name);
+  position: absolute;
+  top: -20px;
+  left: 0;
+  font-size: 11px;
+  color: white;
+  background: var(--blue);
+  padding: 1px 6px;
+  border-radius: 3px 3px 0 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.editor-drop-indicator {
+  height: 2px;
+  background: var(--blue);
+  border-radius: 1px;
+}
+
+/* Scrollbar styling */
+.editor-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.editor-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.editor-panel::-webkit-scrollbar-thumb {
+  background: var(--gray-10);
+  border-radius: 3px;
+}

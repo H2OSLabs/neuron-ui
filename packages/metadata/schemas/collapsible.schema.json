@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NCollapsibleProps",
+  "description": "Neuron collapsible component for expandable/collapsible content sections. Displays a title with a toggle trigger to show or hide child content.",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Title text displayed in the collapsible header trigger."
+    },
+    "defaultOpen": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the collapsible is open by default (uncontrolled mode)."
+    },
+    "open": {
+      "type": "boolean",
+      "description": "Whether the collapsible is open (controlled mode)."
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names to apply."
+    }
+  },
+  "required": ["title"],
+  "additionalProperties": false
+}

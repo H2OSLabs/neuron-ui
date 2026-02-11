@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NBadgeProps",
+  "description": "Neuron badge component for displaying short status text, labels, or tags. Supports semantic variants and accent color options.",
+  "type": "object",
+  "properties": {
+    "label": {
+      "type": "string",
+      "description": "Text content displayed inside the badge."
+    },
+    "variant": {
+      "type": "string",
+      "enum": ["default", "secondary", "destructive", "outline"],
+      "default": "default",
+      "description": "Visual style variant of the badge."
+    },
+    "size": {
+      "type": "string",
+      "enum": ["sm", "md"],
+      "default": "md",
+      "description": "Size of the badge."
+    },
+    "color": {
+      "type": "string",
+      "enum": [
+        "pink",
+        "pink-light",
+        "yellow",
+        "yellow-bright",
+        "lime",
+        "lime-light",
+        "green",
+        "blue",
+        "purple",
+        "lavender"
+      ],
+      "description": "Accent color for the badge. Uses the design token color palette."
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names to apply."
+    }
+  },
+  "required": ["label"],
+  "additionalProperties": false
+}
