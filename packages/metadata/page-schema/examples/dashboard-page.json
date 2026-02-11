@@ -1,0 +1,186 @@
+{
+  "version": "1.0.0",
+  "page": {
+    "id": "sales-dashboard",
+    "name": "销售仪表盘",
+    "description": "销售数据概览仪表盘",
+    "route": "/dashboard/sales"
+  },
+  "dataSources": {
+    "stats": {
+      "api": "GET /api/dashboard/stats",
+      "autoFetch": true
+    },
+    "salesChart": {
+      "api": "GET /api/dashboard/sales-chart",
+      "params": { "period": "month" },
+      "autoFetch": true
+    },
+    "recentOrders": {
+      "api": "GET /api/dashboard/recent-orders",
+      "params": { "limit": 10 },
+      "autoFetch": true
+    }
+  },
+  "tree": [
+    {
+      "id": "root",
+      "component": "NResizable",
+      "props": { "direction": "horizontal" },
+      "children": [
+        {
+          "id": "sidebar",
+          "component": "NSidebar",
+          "props": { "width": "240px", "collapsedWidth": "64px" },
+          "children": [
+            {
+              "id": "nav-logo",
+              "component": "NText",
+              "props": { "text": "Sales CRM", "size": "section", "weight": "bold" }
+            },
+            {
+              "id": "nav-sep",
+              "component": "NSeparator",
+              "props": {}
+            },
+            {
+              "id": "nav-dashboard",
+              "component": "NButton",
+              "props": { "label": "仪表盘", "variant": "ghost", "icon": "layout-dashboard" }
+            },
+            {
+              "id": "nav-orders",
+              "component": "NButton",
+              "props": { "label": "订单管理", "variant": "ghost", "icon": "shopping-cart" }
+            },
+            {
+              "id": "nav-customers",
+              "component": "NButton",
+              "props": { "label": "客户管理", "variant": "ghost", "icon": "users" }
+            }
+          ]
+        },
+        {
+          "id": "main-content",
+          "component": "NResizable",
+          "props": { "direction": "vertical" },
+          "children": [
+            {
+              "id": "breadcrumb",
+              "component": "NBreadcrumb",
+              "props": {
+                "items": [
+                  { "label": "首页", "href": "/" },
+                  { "label": "仪表盘" }
+                ]
+              }
+            },
+            {
+              "id": "page-title",
+              "component": "NText",
+              "props": { "text": "销售仪表盘", "size": "heading", "weight": "bold" }
+            },
+            {
+              "id": "stat-cards",
+              "component": "NResizable",
+              "props": { "direction": "horizontal" },
+              "children": [
+                {
+                  "id": "stat-revenue",
+                  "component": "NCard",
+                  "props": { "title": "本月收入", "variant": "default" },
+                  "children": [
+                    {
+                      "id": "revenue-value",
+                      "component": "NText",
+                      "props": { "size": "heading", "weight": "bold" },
+                      "binding": { "dataSource": "stats", "field": "revenue" }
+                    },
+                    {
+                      "id": "revenue-badge",
+                      "component": "NBadge",
+                      "props": { "label": "+12.5%", "color": "green" }
+                    }
+                  ]
+                },
+                {
+                  "id": "stat-orders",
+                  "component": "NCard",
+                  "props": { "title": "订单数", "variant": "default" },
+                  "children": [
+                    {
+                      "id": "orders-value",
+                      "component": "NText",
+                      "props": { "size": "heading", "weight": "bold" },
+                      "binding": { "dataSource": "stats", "field": "orderCount" }
+                    }
+                  ]
+                },
+                {
+                  "id": "stat-conversion",
+                  "component": "NCard",
+                  "props": { "title": "转化率", "variant": "default" },
+                  "children": [
+                    {
+                      "id": "conversion-progress",
+                      "component": "NProgress",
+                      "props": { "max": 100 },
+                      "binding": { "dataSource": "stats", "field": "conversionRate" }
+                    }
+                  ]
+                },
+                {
+                  "id": "stat-customers",
+                  "component": "NCard",
+                  "props": { "title": "新客户", "variant": "default" },
+                  "children": [
+                    {
+                      "id": "customers-value",
+                      "component": "NText",
+                      "props": { "size": "heading", "weight": "bold" },
+                      "binding": { "dataSource": "stats", "field": "newCustomers" }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "chart-section",
+              "component": "NCard",
+              "props": { "title": "销售趋势", "variant": "default" },
+              "children": [
+                {
+                  "id": "sales-chart",
+                  "component": "NChart",
+                  "props": { "type": "line" },
+                  "binding": { "dataSource": "salesChart", "field": "data" }
+                }
+              ]
+            },
+            {
+              "id": "recent-orders-section",
+              "component": "NCard",
+              "props": { "title": "最近订单", "variant": "default" },
+              "children": [
+                {
+                  "id": "recent-table",
+                  "component": "NDataTable",
+                  "props": {
+                    "columns": [
+                      { "key": "orderId", "label": "订单号" },
+                      { "key": "customer", "label": "客户" },
+                      { "key": "amount", "label": "金额", "sortable": true },
+                      { "key": "status", "label": "状态" },
+                      { "key": "date", "label": "日期", "sortable": true }
+                    ]
+                  },
+                  "binding": { "dataSource": "recentOrders", "field": "data" }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NLabelProps",
+  "description": "Neuron label component for form field labels. Supports required field indicators and accessible htmlFor associations.",
+  "type": "object",
+  "properties": {
+    "label": {
+      "type": "string",
+      "description": "Text content of the label."
+    },
+    "htmlFor": {
+      "type": "string",
+      "description": "ID of the form element this label is associated with."
+    },
+    "required": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether to display a required field indicator (asterisk)."
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names to apply."
+    }
+  },
+  "required": ["label"],
+  "additionalProperties": false
+}

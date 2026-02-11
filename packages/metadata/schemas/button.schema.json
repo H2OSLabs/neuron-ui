@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NButtonProps",
+  "description": "Neuron button component with multiple variants and sizes. Wraps shadcn/ui Button with extended functionality including icon support and custom sizing.",
+  "type": "object",
+  "properties": {
+    "label": {
+      "type": "string",
+      "description": "Text content displayed inside the button."
+    },
+    "variant": {
+      "type": "string",
+      "enum": ["default", "destructive", "outline", "secondary", "ghost", "link"],
+      "default": "default",
+      "description": "Visual style variant of the button."
+    },
+    "size": {
+      "type": "string",
+      "enum": ["xs", "sm", "md", "lg", "xl", "icon"],
+      "default": "md",
+      "description": "Size of the button. Use 'icon' for icon-only buttons."
+    },
+    "icon": {
+      "type": "string",
+      "description": "Icon name to display inside the button (e.g. 'Plus', 'Trash2')."
+    },
+    "iconPosition": {
+      "type": "string",
+      "enum": ["left", "right"],
+      "default": "left",
+      "description": "Position of the icon relative to the label text."
+    },
+    "disabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the button is disabled and non-interactive."
+    },
+    "onClick": {
+      "type": "string",
+      "description": "Binding key for the click event handler."
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names to apply."
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

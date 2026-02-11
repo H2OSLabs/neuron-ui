@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NInputOTPProps",
+  "description": "Props for the NInputOTP component. A one-time password input with individual character slots for verification codes.",
+  "type": "object",
+  "properties": {
+    "length": {
+      "type": "integer",
+      "description": "Number of OTP digit slots to display",
+      "default": 6,
+      "minimum": 1
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names for custom styling"
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NInputGroupProps",
+  "description": "Props for the NInputGroup component. Wraps an input with an optional label and icon for grouped form layouts.",
+  "type": "object",
+  "properties": {
+    "label": {
+      "type": "string",
+      "description": "Label text displayed above or beside the input group"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Icon name or identifier displayed within the input group"
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names for custom styling"
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

@@ -1,0 +1,199 @@
+/*
+ * Storybook CSS entry point
+ * Self-contained version of @neuron-ui/tokens/css/globals.css
+ * to avoid cross-package @import resolution issues with pnpm.
+ *
+ * When globals.css is updated, sync the content below (excluding @import "tailwindcss").
+ */
+@import "tailwindcss";
+
+/* ================================================================
+   FONT FACES
+   ================================================================ */
+@font-face {
+  font-family: 'Swei Gothic CJK SC';
+  src: url('https://cdn.jsdelivr.net/gh/max32002/swei-gothic@2.142/WebFont/CJK%20SC/SweiGothicCJKsc-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Swei Gothic CJK SC';
+  src: url('https://cdn.jsdelivr.net/gh/max32002/swei-gothic@2.142/WebFont/CJK%20SC/SweiGothicCJKsc-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+
+/* ================================================================
+   CSS VARIABLES
+   ================================================================ */
+:root {
+  /* Gray Scale (14 级暖灰) */
+  --gray-01: #5F5D57;
+  --gray-02: #6D6B65;
+  --gray-03: #7E7C76;
+  --gray-04: #8D8B85;
+  --gray-05: #9B9993;
+  --gray-06: #A8A6A0;
+  --gray-07: #B9B7B1;
+  --gray-08: #CDCBC5;
+  --gray-09: #DCDAD4;
+  --gray-10: #E8E5DE;
+  --gray-11: #ECE9E3;
+  --gray-12: #F3F1ED;
+  --gray-13: #F9F8F6;
+  --gray-14: #FCFCFC;
+
+  /* Accent Colors (10 种辅助色) */
+  --accent-pink: #FFC4E1;
+  --accent-pink-light: #FFD6D2;
+  --accent-yellow: #FFF0CE;
+  --accent-yellow-bright: #FFFBBC;
+  --accent-lime: #EEFFAF;
+  --accent-lime-light: #E1FFD0;
+  --accent-green: #C1F2CE;
+  --accent-blue: #BEF1FF;
+  --accent-purple: #E1E1FF;
+  --accent-lavender: #F0E6FF;
+
+  /* Semantic Colors */
+  --color-error: #E67853;
+  --color-warning: #E8A540;
+  --color-success: #6EC18E;
+
+  /* shadcn 语义变量 → 暖灰色系映射 */
+  --background: var(--gray-13);
+  --foreground: var(--gray-01);
+  --card: var(--gray-14);
+  --card-foreground: var(--gray-01);
+  --popover: var(--gray-14);
+  --popover-foreground: var(--gray-01);
+  --primary: var(--gray-01);
+  --primary-foreground: var(--gray-14);
+  --secondary: var(--gray-12);
+  --secondary-foreground: var(--gray-02);
+  --muted: var(--gray-12);
+  --muted-foreground: var(--gray-05);
+  --accent: var(--gray-11);
+  --accent-foreground: var(--gray-01);
+  --destructive: var(--color-error);
+  --destructive-foreground: var(--gray-14);
+  --border: var(--gray-09);
+  --input: var(--gray-09);
+  --ring: var(--gray-05);
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md-: 12px;
+  --spacing-md: 16px;
+  --spacing-lg-: 20px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 36px;
+  --spacing-3xl: 48px;
+  --spacing-4xl: 64px;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+  --radius: 8px;
+
+  /* Typography */
+  --font-heading: 'Asul', serif;
+  --font-body: 'Swei Gothic CJK SC', system-ui, -apple-system, sans-serif;
+  --font-size-display: 48px;
+  --font-size-heading: 36px;
+  --font-size-subheading: 28px;
+  --font-size-section: 24px;
+  --font-size-body-lg: 18px;
+  --font-size-body: 14px;
+  --font-size-caption: 12px;
+}
+
+/* ================================================================
+   TAILWIND v4: @theme inline — 注册 CSS 变量为 Tailwind 工具类
+   ================================================================ */
+@theme inline {
+  /* shadcn 语义色 → Tailwind: bg-background, text-foreground, etc. */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* neuron 灰阶 → Tailwind: bg-gray-01, text-gray-05, etc. */
+  --color-gray-01: var(--gray-01);
+  --color-gray-02: var(--gray-02);
+  --color-gray-03: var(--gray-03);
+  --color-gray-04: var(--gray-04);
+  --color-gray-05: var(--gray-05);
+  --color-gray-06: var(--gray-06);
+  --color-gray-07: var(--gray-07);
+  --color-gray-08: var(--gray-08);
+  --color-gray-09: var(--gray-09);
+  --color-gray-10: var(--gray-10);
+  --color-gray-11: var(--gray-11);
+  --color-gray-12: var(--gray-12);
+  --color-gray-13: var(--gray-13);
+  --color-gray-14: var(--gray-14);
+
+  /* neuron 辅助色 → Tailwind: bg-accent-pink, text-accent-blue, etc. */
+  --color-accent-pink: var(--accent-pink);
+  --color-accent-pink-light: var(--accent-pink-light);
+  --color-accent-yellow: var(--accent-yellow);
+  --color-accent-yellow-bright: var(--accent-yellow-bright);
+  --color-accent-lime: var(--accent-lime);
+  --color-accent-lime-light: var(--accent-lime-light);
+  --color-accent-green: var(--accent-green);
+  --color-accent-blue: var(--accent-blue);
+  --color-accent-purple: var(--accent-purple);
+  --color-accent-lavender: var(--accent-lavender);
+
+  /* 语义色 */
+  --color-error: var(--color-error);
+  --color-warning: var(--color-warning);
+  --color-success: var(--color-success);
+
+  /* 圆角 → Tailwind: rounded-sm, rounded-xl, etc. */
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-full: var(--radius-full);
+
+  /* 字体 → Tailwind: font-heading, font-body */
+  --font-heading: var(--font-heading);
+  --font-body: var(--font-body);
+}
+
+/* ================================================================
+   BASE STYLES
+   ================================================================ */
+* {
+  border-color: var(--border);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body);
+  font-size: var(--font-size-body);
+  line-height: 1.6;
+}

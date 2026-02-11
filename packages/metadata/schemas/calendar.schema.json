@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NCalendarProps",
+  "description": "Props for the NCalendar component. A standalone calendar display for viewing and selecting dates.",
+  "type": "object",
+  "properties": {
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names for custom styling"
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

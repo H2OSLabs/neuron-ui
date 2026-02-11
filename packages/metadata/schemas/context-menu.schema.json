@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NContextMenuProps",
+  "description": "Props for the NContextMenu component. A right-click context menu that displays a list of contextual actions.",
+  "type": "object",
+  "properties": {
+    "items": {
+      "type": "array",
+      "description": "List of context menu items to display",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "description": "The display text for the menu item"
+          }
+        },
+        "required": ["label"],
+        "additionalProperties": false
+      }
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names for custom styling"
+    }
+  },
+  "required": ["items"],
+  "additionalProperties": false
+}

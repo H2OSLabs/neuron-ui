@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: [main, 'feature/**']
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm --filter @neuron-ui/metadata --filter @neuron-ui/generator --filter @neuron-ui/runtime --filter @neuron-ui/codegen --filter @neuron-ui/page-builder --filter @neuron-ui/mcp-server --filter @neuron-ui/tokens test

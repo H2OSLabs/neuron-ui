@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NCarouselProps",
+  "description": "Props for the NCarousel component. A slideshow carousel for cycling through a collection of content items.",
+  "type": "object",
+  "properties": {
+    "items": {
+      "type": "array",
+      "description": "Array of content items (image URLs or text) to display in the carousel",
+      "items": {
+        "type": "string"
+      }
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names for custom styling"
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

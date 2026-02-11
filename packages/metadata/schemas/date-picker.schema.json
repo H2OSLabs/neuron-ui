@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NDatePickerProps",
+  "description": "Props for the NDatePicker component. A calendar-based date selection input for picking single dates.",
+  "type": "object",
+  "properties": {
+    "value": {
+      "type": "string",
+      "description": "The currently selected date value in ISO 8601 format (YYYY-MM-DD)"
+    },
+    "placeholder": {
+      "type": "string",
+      "description": "Placeholder text shown when no date is selected"
+    },
+    "disabled": {
+      "type": "boolean",
+      "description": "Whether the date picker is disabled and non-interactive"
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names for custom styling"
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

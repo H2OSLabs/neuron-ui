@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NTextareaProps",
+  "description": "Props for the NTextarea component. A multi-line text input area for longer form content such as descriptions and comments.",
+  "type": "object",
+  "properties": {
+    "placeholder": {
+      "type": "string",
+      "description": "Placeholder text shown when the textarea is empty"
+    },
+    "value": {
+      "type": "string",
+      "description": "The current text value of the textarea"
+    },
+    "defaultValue": {
+      "type": "string",
+      "description": "The initial default text value"
+    },
+    "rows": {
+      "type": "integer",
+      "description": "Number of visible text rows",
+      "minimum": 1
+    },
+    "disabled": {
+      "type": "boolean",
+      "description": "Whether the textarea is disabled and non-interactive"
+    },
+    "invalid": {
+      "type": "boolean",
+      "description": "Whether the textarea is in an invalid/error state"
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names for custom styling"
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

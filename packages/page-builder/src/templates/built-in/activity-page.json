@@ -1,0 +1,66 @@
+{
+  "version": "1.0.0",
+  "page": {
+    "id": "activity-list",
+    "name": "活动列表",
+    "description": "活动管理列表页模板",
+    "route": "/activities"
+  },
+  "dataSources": {
+    "activityList": {
+      "api": "GET /api/activities",
+      "params": { "page": 1, "pageSize": 20 },
+      "autoFetch": true
+    },
+    "createActivity": {
+      "api": "POST /api/activities",
+      "method": "POST"
+    }
+  },
+  "tree": [
+    {
+      "id": "root",
+      "component": "NResizable",
+      "props": { "direction": "vertical" },
+      "children": [
+        {
+          "id": "header",
+          "component": "NCard",
+          "props": { "variant": "default" },
+          "children": [
+            {
+              "id": "title",
+              "component": "NText",
+              "props": { "text": "活动管理", "size": "heading", "weight": "bold" }
+            },
+            {
+              "id": "create-btn",
+              "component": "NButton",
+              "props": { "label": "新建活动", "variant": "default", "size": "md" },
+              "binding": { "onClick": "createActivity" }
+            }
+          ]
+        },
+        {
+          "id": "table",
+          "component": "NDataTable",
+          "props": {
+            "columns": [
+              { "key": "name", "label": "活动名称" },
+              { "key": "status", "label": "状态" },
+              { "key": "startDate", "label": "开始日期" },
+              { "key": "endDate", "label": "结束日期" },
+              { "key": "participants", "label": "参与人数" }
+            ]
+          },
+          "binding": { "dataSource": "activityList", "field": "items" }
+        },
+        {
+          "id": "pagination",
+          "component": "NPagination",
+          "props": { "currentPage": 1, "totalPages": 10 }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,305 @@
+{
+  "version": "2.0.0",
+  "fieldTypeMapping": {
+    "display": {
+      "string": {
+        "component": "NText",
+        "props": {},
+        "description": "短文本展示 (用户名、标题)"
+      },
+      "string:long": {
+        "component": "NText",
+        "props": { "maxLines": 3 },
+        "description": "长文本展示 (描述、简介)"
+      },
+      "string:url": {
+        "component": "NCard",
+        "props": { "variant": "cover-top" },
+        "description": "URL/链接展示"
+      },
+      "string:image": {
+        "component": "NAvatar",
+        "props": {},
+        "description": "图片/头像展示"
+      },
+      "string:enum": {
+        "component": "NBadge",
+        "props": {},
+        "description": "枚举/状态标签展示"
+      },
+      "number": {
+        "component": "NText",
+        "props": {},
+        "description": "数值展示 (积分、价格)"
+      },
+      "number:percentage": {
+        "component": "NProgress",
+        "props": {},
+        "description": "百分比进度展示"
+      },
+      "boolean": {
+        "component": "NBadge",
+        "props": { "variant": "outline" },
+        "description": "布尔值标签展示"
+      },
+      "date": {
+        "component": "NText",
+        "props": {},
+        "description": "日期展示"
+      },
+      "datetime": {
+        "component": "NText",
+        "props": {},
+        "description": "日期时间展示"
+      },
+      "array:object": {
+        "component": "NDataTable",
+        "props": {},
+        "description": "对象数组 → 表格展示"
+      },
+      "array:object:grouped": {
+        "component": "NAccordion",
+        "props": {},
+        "description": "分组对象 → 手风琴展示"
+      },
+      "array:object:timeline": {
+        "component": "NCarousel",
+        "props": {},
+        "description": "时间线/轮播数据"
+      },
+      "array:string": {
+        "component": "NBadge",
+        "props": {},
+        "note": "渲染为多个 NBadge 标签",
+        "description": "字符串数组 → 标签列表"
+      },
+      "array:number": {
+        "component": "NChart",
+        "props": { "type": "bar" },
+        "description": "数值数组 → 图表"
+      },
+      "object:user": {
+        "component": "NAvatar",
+        "props": { "size": "md" },
+        "description": "用户对象 → 头像+名称"
+      },
+      "object:nested": {
+        "component": "NHoverCard",
+        "props": {},
+        "description": "嵌套对象 → 悬停预览"
+      },
+      "null": {
+        "component": "NEmpty",
+        "props": {},
+        "description": "空数据 → 空状态展示"
+      },
+      "loading": {
+        "component": "NSkeleton",
+        "props": {},
+        "description": "加载中 → 骨架屏占位"
+      }
+    },
+    "input": {
+      "string": {
+        "component": "NInput",
+        "wrapper": "NField",
+        "props": {},
+        "description": "短文本输入"
+      },
+      "string:long": {
+        "component": "NTextarea",
+        "wrapper": "NField",
+        "props": {},
+        "description": "长文本输入"
+      },
+      "string:enum:few": {
+        "component": "NSelect",
+        "wrapper": "NField",
+        "props": {},
+        "description": "少量选项 (≤5) 下拉选择",
+        "alternativeComponent": "NRadioGroup",
+        "alternativeNote": "选项 ≤ 3 时可用单选组代替"
+      },
+      "string:enum": {
+        "component": "NCombobox",
+        "wrapper": "NField",
+        "props": { "searchable": true },
+        "description": "多选项 (>5) 可搜索下拉"
+      },
+      "number": {
+        "component": "NInput",
+        "wrapper": "NField",
+        "props": { "type": "number" },
+        "description": "数值输入"
+      },
+      "number:range": {
+        "component": "NSlider",
+        "wrapper": "NField",
+        "props": {},
+        "description": "数值范围选择"
+      },
+      "boolean": {
+        "component": "NSwitch",
+        "props": {},
+        "description": "布尔值切换",
+        "alternativeComponent": "NCheckbox",
+        "alternativeNote": "语义为勾选确认时用 NCheckbox"
+      },
+      "date": {
+        "component": "NDatePicker",
+        "wrapper": "NField",
+        "props": {},
+        "description": "日期选择"
+      },
+      "datetime": {
+        "component": "NDatePicker",
+        "wrapper": "NField",
+        "props": {},
+        "description": "日期时间选择"
+      },
+      "date-range": {
+        "component": "NDatePicker",
+        "wrapper": "NField",
+        "props": {},
+        "description": "日期范围选择"
+      },
+      "file": {
+        "component": "NInput",
+        "wrapper": "NField",
+        "props": { "type": "file" },
+        "description": "文件上传"
+      },
+      "array:string:few": {
+        "component": "NCheckbox",
+        "wrapper": "NField",
+        "props": {},
+        "description": "少量多选 (≤10) 复选框"
+      },
+      "array:string": {
+        "component": "NCombobox",
+        "wrapper": "NField",
+        "props": { "multiple": true },
+        "description": "大量多选 (>10) 可搜索多选"
+      },
+      "array:object": {
+        "component": "NInputGroup",
+        "props": {},
+        "description": "动态多条目输入"
+      },
+      "otp": {
+        "component": "NInputOTP",
+        "props": { "length": 6 },
+        "description": "验证码输入"
+      }
+    }
+  },
+  "decisionTree": {
+    "description": "字段→组件决策树，按优先级匹配",
+    "display": [
+      { "condition": "type === 'array' && itemType === 'object'", "component": "NDataTable", "note": "列表数据" },
+      { "condition": "type === 'string' && format === 'enum'", "component": "NBadge", "note": "枚举/状态" },
+      { "condition": "type === 'string' && format === 'image'", "component": "NAvatar", "note": "图片" },
+      { "condition": "type === 'number' && semanticHint === 'percentage'", "component": "NProgress", "note": "百分比" },
+      { "condition": "type === 'array' && itemType === 'number'", "component": "NChart", "note": "图表" },
+      { "condition": "type === 'array' && itemType === 'string'", "component": "NBadge", "note": "标签列表" },
+      { "condition": "value === null || value === undefined || (Array.isArray(value) && value.length === 0)", "component": "NEmpty", "note": "空数据" },
+      { "condition": "isLoading", "component": "NSkeleton", "note": "加载中" },
+      { "condition": "default", "component": "NText", "note": "兜底文本" }
+    ],
+    "input": [
+      { "condition": "type === 'string' && format === 'enum' && options.length <= 5", "component": "NSelect", "note": "少量选项" },
+      { "condition": "type === 'string' && format === 'enum' && options.length > 5", "component": "NCombobox", "note": "大量选项" },
+      { "condition": "type === 'boolean'", "component": "NSwitch", "note": "布尔" },
+      { "condition": "type === 'date' || type === 'datetime'", "component": "NDatePicker", "note": "日期" },
+      { "condition": "type === 'number' && hasRange", "component": "NSlider", "note": "数值范围" },
+      { "condition": "type === 'string' && isLongText", "component": "NTextarea", "note": "长文本" },
+      { "condition": "format === 'otp'", "component": "NInputOTP", "note": "验证码" },
+      { "condition": "default", "component": "NInput", "note": "兜底输入框" }
+    ]
+  },
+  "apiPatternMapping": {
+    "GET /list": {
+      "pagePattern": "list-page",
+      "primaryComponent": "NDataTable",
+      "supportComponents": ["NInputGroup", "NButton", "NBadge", "NDropdownMenu", "NPagination", "NEmpty", "NSkeleton"],
+      "description": "列表页：表格展示 + 搜索过滤 + 操作按钮 + 分页 + 空状态 + 加载骨架"
+    },
+    "GET /:id": {
+      "pagePattern": "detail-page",
+      "primaryComponent": "NCard",
+      "supportComponents": ["NText", "NBadge", "NAvatar", "NButton", "NTabs", "NAccordion", "NBreadcrumb", "NHoverCard"],
+      "description": "详情页：卡片展示 + 状态标签 + Tab 分区 + 面包屑导航"
+    },
+    "GET /stats": {
+      "pagePattern": "dashboard",
+      "primaryComponent": "NCard",
+      "supportComponents": ["NChart", "NProgress", "NText", "NBadge"],
+      "description": "仪表盘：统计卡片 + 图表 + 进度展示"
+    },
+    "POST /": {
+      "pagePattern": "create-form",
+      "primaryComponent": "NDialog",
+      "supportComponents": ["NField", "NInput", "NTextarea", "NCombobox", "NSelect", "NSwitch", "NDatePicker", "NCheckbox", "NRadioGroup", "NSlider", "NButton"],
+      "description": "创建表单：弹窗 + 输入字段 + 提交按钮"
+    },
+    "POST /auth": {
+      "pagePattern": "auth-form",
+      "primaryComponent": "NCard",
+      "supportComponents": ["NInput", "NInputOTP", "NButton", "NField"],
+      "description": "认证表单：登录/注册/验证码"
+    },
+    "PUT /:id": {
+      "pagePattern": "edit-form",
+      "primaryComponent": "NSheet",
+      "supportComponents": ["NField", "NInput", "NTextarea", "NCombobox", "NSelect", "NSwitch", "NDatePicker", "NCheckbox", "NRadioGroup", "NSlider", "NButton"],
+      "description": "编辑表单：侧边面板 + 预填字段 + 保存按钮"
+    },
+    "DELETE /:id": {
+      "pagePattern": "delete-confirm",
+      "primaryComponent": "NAlertDialog",
+      "supportComponents": ["NText", "NButton"],
+      "description": "删除确认：强制确认弹窗 + 警告文案 + 确认/取消按钮"
+    }
+  },
+  "compositePatterns": {
+    "CRUD": {
+      "description": "当同一资源同时有 GET/POST/PUT/DELETE 时，生成完整 CRUD 页面",
+      "requiredApis": ["GET /list", "POST /", "PUT /:id", "DELETE /:id"],
+      "layout": {
+        "navigation": { "component": "NBreadcrumb", "role": "页面层级导航" },
+        "toolbar": { "components": ["NButton", "NInputGroup"], "role": "新建按钮 + 搜索过滤" },
+        "main": { "component": "NDataTable", "role": "GET /list 数据展示" },
+        "pagination": { "component": "NPagination", "role": "列表分页" },
+        "createModal": { "component": "NDialog", "role": "POST / 创建表单", "children": ["NField[]"] },
+        "editPanel": { "component": "NSheet", "role": "PUT /:id 编辑表单", "children": ["NField[]"] },
+        "deleteConfirm": { "component": "NAlertDialog", "role": "DELETE /:id 确认弹窗" },
+        "rowActions": { "component": "NDropdownMenu", "role": "行操作菜单 (编辑/删除)" },
+        "feedback": { "component": "NToast", "role": "操作结果通知" },
+        "loading": { "component": "NSkeleton", "role": "数据加载占位" },
+        "empty": { "component": "NEmpty", "role": "无数据状态" }
+      }
+    },
+    "dashboard": {
+      "description": "多个 GET 接口聚合成仪表盘",
+      "requiredApis": ["GET /stats"],
+      "layout": {
+        "navigation": { "components": ["NSidebar", "NBreadcrumb"], "role": "侧边导航 + 面包屑" },
+        "cards": { "components": ["NCard[]", "NProgress"], "role": "各指标统计卡片" },
+        "charts": { "component": "NChart[]", "role": "数据可视化图表" },
+        "table": { "components": ["NDataTable", "NPagination"], "role": "最近数据列表" },
+        "loading": { "component": "NSkeleton", "role": "加载占位" }
+      }
+    },
+    "detail-with-tabs": {
+      "description": "详情页包含多个数据维度，用 Tab 分区展示",
+      "requiredApis": ["GET /:id"],
+      "layout": {
+        "navigation": { "component": "NBreadcrumb", "role": "返回列表导航" },
+        "header": { "components": ["NCard", "NAvatar", "NBadge"], "role": "基本信息展示" },
+        "tabs": { "component": "NTabs", "role": "数据分区切换" },
+        "tabContent": { "components": ["NDataTable", "NAccordion", "NCard[]"], "role": "各 Tab 内容" },
+        "actions": { "components": ["NButton", "NDropdownMenu"], "role": "操作按钮" }
+      }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NToastProps",
+  "description": "Neuron toast notification component for displaying brief, non-intrusive messages. Supports semantic variants for success, error, and warning states.",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Primary text content of the toast notification."
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional secondary text providing additional context for the toast."
+    },
+    "variant": {
+      "type": "string",
+      "enum": ["default", "success", "error", "warning"],
+      "default": "default",
+      "description": "Semantic variant controlling the visual style and icon of the toast."
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names to apply."
+    }
+  },
+  "required": ["title"],
+  "additionalProperties": false
+}

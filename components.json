@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "default",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "packages/tokens/css/globals.css",
+    "baseColor": "stone",
+    "cssVariables": true
+  },
+  "aliases": {
+    "components": "@neuron-ui/components/src/ui",
+    "utils": "@neuron-ui/components/src/lib/utils",
+    "ui": "@neuron-ui/components/src/ui",
+    "lib": "@neuron-ui/components/src/lib",
+    "hooks": "@neuron-ui/components/src/hooks"
+  }
+}

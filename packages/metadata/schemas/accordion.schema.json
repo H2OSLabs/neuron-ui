@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NAccordionProps",
+  "description": "Props for the NAccordion component. A vertically stacked set of collapsible sections for organizing and revealing content progressively.",
+  "type": "object",
+  "properties": {
+    "items": {
+      "type": "array",
+      "description": "List of accordion sections to display",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the accordion item"
+          },
+          "title": {
+            "type": "string",
+            "description": "The header text displayed on the collapsible trigger"
+          },
+          "content": {
+            "type": "string",
+            "description": "The content revealed when the section is expanded"
+          }
+        },
+        "required": ["id", "title", "content"],
+        "additionalProperties": false
+      }
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names for custom styling"
+    }
+  },
+  "required": ["items"],
+  "additionalProperties": false
+}

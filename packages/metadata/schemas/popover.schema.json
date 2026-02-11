@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NPopoverProps",
+  "description": "Neuron popover component for displaying rich content in a floating panel anchored to a trigger element. Useful for compact forms, filters, or contextual actions.",
+  "type": "object",
+  "properties": {
+    "triggerLabel": {
+      "type": "string",
+      "description": "Text label displayed on the popover trigger button."
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names to apply."
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

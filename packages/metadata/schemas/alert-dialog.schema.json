@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NAlertDialogProps",
+  "description": "Neuron alert dialog component for confirmation actions. Requires explicit user response before proceeding, with confirm and cancel buttons.",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Title text displayed in the alert dialog header."
+    },
+    "description": {
+      "type": "string",
+      "description": "Description text explaining what action the user is confirming."
+    },
+    "confirmLabel": {
+      "type": "string",
+      "default": "Confirm",
+      "description": "Text label for the confirm/action button."
+    },
+    "cancelLabel": {
+      "type": "string",
+      "default": "Cancel",
+      "description": "Text label for the cancel button."
+    },
+    "open": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the alert dialog is open (controlled mode)."
+    },
+    "destructive": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the confirm button uses destructive styling to indicate a dangerous action."
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names to apply."
+    }
+  },
+  "required": ["title", "description"],
+  "additionalProperties": false
+}

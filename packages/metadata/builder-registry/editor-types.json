@@ -1,0 +1,121 @@
+{
+  "version": "1.0.0",
+  "description": "Props → 属性编辑器类型映射 — 定义 Page Builder 中每种 prop 类型对应的编辑器控件",
+  "editorTypes": {
+    "string": {
+      "editor": "text-input",
+      "description": "单行文本输入"
+    },
+    "string:long": {
+      "editor": "textarea",
+      "description": "多行文本输入"
+    },
+    "string:enum": {
+      "editor": "select",
+      "description": "下拉选择"
+    },
+    "string:icon": {
+      "editor": "icon-picker",
+      "description": "图标选择器 (lucide-react 图标)"
+    },
+    "string:color": {
+      "editor": "color-token-picker",
+      "description": "Token 色值选择器"
+    },
+    "string:css": {
+      "editor": "text-input",
+      "description": "CSS 值输入 (如宽度、高度)"
+    },
+    "number": {
+      "editor": "number-input",
+      "description": "数值输入"
+    },
+    "number:slider": {
+      "editor": "slider",
+      "description": "滑块选择"
+    },
+    "boolean": {
+      "editor": "switch",
+      "description": "开关切换"
+    },
+    "array:items": {
+      "editor": "list-editor",
+      "description": "列表项编辑器 (可增删改排序)"
+    },
+    "array:columns": {
+      "editor": "column-editor",
+      "description": "表格列配置编辑器"
+    },
+    "object:binding": {
+      "editor": "binding-editor",
+      "description": "数据绑定编辑器"
+    },
+    "slot": {
+      "editor": "slot-dropzone",
+      "description": "插槽拖放区"
+    }
+  },
+  "propEditorMap": {
+    "label": "string",
+    "text": "string",
+    "title": "string",
+    "description": "string:long",
+    "placeholder": "string",
+    "variant": "string:enum",
+    "size": "string:enum",
+    "side": "string:enum",
+    "orientation": "string:enum",
+    "type": "string:enum",
+    "color": "string:color",
+    "icon": "string:icon",
+    "src": "string",
+    "alt": "string",
+    "fallback": "string",
+    "htmlFor": "string",
+    "className": "string",
+    "value": "string",
+    "defaultValue": "string",
+    "width": "string:css",
+    "height": "string:css",
+    "maxHeight": "string:css",
+    "maxWidth": "string:css",
+    "collapsedWidth": "string:css",
+    "separator": "string",
+    "confirmLabel": "string",
+    "cancelLabel": "string",
+    "triggerLabel": "string",
+    "triggerText": "string",
+    "actionLabel": "string",
+    "errorMessage": "string",
+    "error": "string",
+    "ratio": "number",
+    "min": "number",
+    "max": "number",
+    "step": "number",
+    "rows": "number",
+    "length": "number",
+    "currentPage": "number",
+    "totalPages": "number",
+    "maxLines": "number",
+    "disabled": "boolean",
+    "invalid": "boolean",
+    "required": "boolean",
+    "checked": "boolean",
+    "pressed": "boolean",
+    "open": "boolean",
+    "defaultOpen": "boolean",
+    "collapsed": "boolean",
+    "multiple": "boolean",
+    "searchable": "boolean",
+    "rounded": "boolean",
+    "truncate": "boolean",
+    "destructive": "boolean",
+    "items": "array:items",
+    "options": "array:items",
+    "tabs": "array:items",
+    "menus": "array:items",
+    "columns": "array:columns",
+    "data": "array:items",
+    "keys": "array:items"
+  }
+}

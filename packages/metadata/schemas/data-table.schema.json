@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NDataTableProps",
+  "description": "Props for the NDataTable component. A feature-rich data table for displaying tabular data with optional column sorting.",
+  "type": "object",
+  "properties": {
+    "columns": {
+      "type": "array",
+      "description": "Column definitions that describe the table structure",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "The data field key this column maps to"
+          },
+          "label": {
+            "type": "string",
+            "description": "The column header display text"
+          },
+          "sortable": {
+            "type": "boolean",
+            "description": "Whether this column supports click-to-sort"
+          }
+        },
+        "required": ["key", "label"],
+        "additionalProperties": false
+      }
+    },
+    "data": {
+      "type": "array",
+      "description": "Array of row data objects to display in the table",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names for custom styling"
+    }
+  },
+  "required": ["columns", "data"],
+  "additionalProperties": false
+}

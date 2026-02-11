@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NAvatarProps",
+  "description": "Neuron avatar component for displaying user profile images with fallback text, online status indicators, and shape options.",
+  "type": "object",
+  "properties": {
+    "src": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL of the avatar image."
+    },
+    "alt": {
+      "type": "string",
+      "description": "Accessible alt text for the avatar image."
+    },
+    "fallback": {
+      "type": "string",
+      "description": "Text to display when the image fails to load (e.g. user initials)."
+    },
+    "size": {
+      "type": "string",
+      "enum": ["sm", "md", "lg"],
+      "default": "md",
+      "description": "Size of the avatar."
+    },
+    "shape": {
+      "type": "string",
+      "enum": ["circle", "square"],
+      "default": "circle",
+      "description": "Shape of the avatar container."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["online", "offline", "busy", "away"],
+      "description": "Online status indicator displayed on the avatar."
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names to apply."
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

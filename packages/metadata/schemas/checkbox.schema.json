@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NCheckboxProps",
+  "description": "Props for the NCheckbox component. A toggleable checkbox input for boolean selections within forms.",
+  "type": "object",
+  "properties": {
+    "label": {
+      "type": "string",
+      "description": "Text label displayed next to the checkbox"
+    },
+    "checked": {
+      "type": "boolean",
+      "description": "Whether the checkbox is currently checked"
+    },
+    "disabled": {
+      "type": "boolean",
+      "description": "Whether the checkbox is disabled and non-interactive"
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names for custom styling"
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}
