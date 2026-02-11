@@ -1,8 +1,8 @@
 @import 'tailwindcss';
-@import '@neuron-ui/tokens/css/colors.css';
-@import '@neuron-ui/tokens/css/spacing.css';
-@import '@neuron-ui/tokens/css/radius.css';
-@import '@neuron-ui/tokens/css/typography.css';
+@import '../../tokens/css/colors.css';
+@import '../../tokens/css/spacing.css';
+@import '../../tokens/css/radius.css';
+@import '../../tokens/css/typography.css';
 
 /* Editor-specific styles */
 
