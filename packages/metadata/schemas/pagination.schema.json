@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NPaginationProps",
+  "description": "Props for the NPagination component. A page navigation control for browsing through paginated content.",
+  "type": "object",
+  "properties": {
+    "currentPage": {
+      "type": "integer",
+      "description": "The currently active page number",
+      "minimum": 1
+    },
+    "totalPages": {
+      "type": "integer",
+      "description": "The total number of available pages",
+      "minimum": 1
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names for custom styling"
+    }
+  },
+  "required": ["currentPage", "totalPages"],
+  "additionalProperties": false
+}

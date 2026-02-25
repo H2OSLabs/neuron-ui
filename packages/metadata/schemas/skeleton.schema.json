@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NSkeletonProps",
+  "description": "Props for the NSkeleton component. A placeholder loading indicator that mimics the shape of content while data is being fetched.",
+  "type": "object",
+  "properties": {
+    "width": {
+      "type": "string",
+      "description": "The width of the skeleton element (e.g., '100%', '200px')"
+    },
+    "height": {
+      "type": "string",
+      "description": "The height of the skeleton element (e.g., '20px', '3rem')"
+    },
+    "rounded": {
+      "type": "boolean",
+      "description": "Whether the skeleton has fully rounded corners (circle/pill shape)"
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names for custom styling"
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NFieldProps",
+  "description": "Props for the NField component. A form field wrapper that provides a label, required indicator, and error message display for any child input.",
+  "type": "object",
+  "properties": {
+    "label": {
+      "type": "string",
+      "description": "The label text displayed for the form field"
+    },
+    "required": {
+      "type": "boolean",
+      "description": "Whether the field is required, displaying a required indicator"
+    },
+    "error": {
+      "type": "string",
+      "description": "Error message text displayed below the field when validation fails"
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names for custom styling"
+    }
+  },
+  "required": ["label"],
+  "additionalProperties": false
+}

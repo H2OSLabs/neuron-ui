@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NSpinnerProps",
+  "description": "Neuron spinner component for indicating loading states. Displays an animated circular indicator.",
+  "type": "object",
+  "properties": {
+    "size": {
+      "type": "string",
+      "enum": ["sm", "md", "lg"],
+      "default": "md",
+      "description": "Size of the spinner."
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names to apply."
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

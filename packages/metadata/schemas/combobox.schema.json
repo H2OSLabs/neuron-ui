@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NComboboxProps",
+  "description": "Props for the NCombobox component. A searchable dropdown that supports single or multiple selection with type-ahead filtering.",
+  "type": "object",
+  "properties": {
+    "options": {
+      "type": "array",
+      "description": "List of selectable options",
+      "items": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "description": "The option value used for form submission"
+          },
+          "label": {
+            "type": "string",
+            "description": "The display label shown to the user"
+          }
+        },
+        "required": ["value", "label"],
+        "additionalProperties": false
+      }
+    },
+    "placeholder": {
+      "type": "string",
+      "description": "Placeholder text shown when no option is selected"
+    },
+    "value": {
+      "type": "string",
+      "description": "The currently selected value"
+    },
+    "multiple": {
+      "type": "boolean",
+      "description": "Whether multiple options can be selected simultaneously"
+    },
+    "searchable": {
+      "type": "boolean",
+      "description": "Whether the user can type to filter options"
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names for custom styling"
+    }
+  },
+  "required": ["options"],
+  "additionalProperties": false
+}

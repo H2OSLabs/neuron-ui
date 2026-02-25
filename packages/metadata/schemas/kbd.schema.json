@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NKbdProps",
+  "description": "Neuron keyboard shortcut display component for rendering keyboard key combinations. Accepts a single key or an array of keys for multi-key shortcuts.",
+  "type": "object",
+  "properties": {
+    "keys": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "A single keyboard key to display."
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "An array of keyboard keys representing a key combination (e.g. ['Ctrl', 'S'])."
+        }
+      ],
+      "description": "Keyboard key(s) to display. Can be a single key string or an array of key strings for combinations."
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names to apply."
+    }
+  },
+  "required": ["keys"],
+  "additionalProperties": false
+}

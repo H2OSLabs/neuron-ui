@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NTextProps",
+  "description": "Neuron text component for rendering typography with consistent design tokens. Supports semantic heading levels, text truncation, and line clamping.",
+  "type": "object",
+  "properties": {
+    "text": {
+      "type": "string",
+      "description": "Text content to display."
+    },
+    "size": {
+      "type": "string",
+      "enum": ["display", "heading", "subheading", "section", "body-lg", "body", "caption"],
+      "default": "body",
+      "description": "Typographic size based on design token scale."
+    },
+    "weight": {
+      "type": "string",
+      "enum": ["normal", "medium", "semibold", "bold"],
+      "default": "normal",
+      "description": "Font weight of the text."
+    },
+    "as": {
+      "type": "string",
+      "enum": ["p", "span", "h1", "h2", "h3", "h4", "h5", "h6", "div"],
+      "default": "p",
+      "description": "HTML element to render the text as."
+    },
+    "color": {
+      "type": "string",
+      "enum": ["default", "muted", "accent", "error", "success", "warning"],
+      "default": "default",
+      "description": "Semantic color of the text."
+    },
+    "truncate": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether to truncate text with ellipsis on overflow."
+    },
+    "maxLines": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Maximum number of lines before clamping with ellipsis."
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names to apply."
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

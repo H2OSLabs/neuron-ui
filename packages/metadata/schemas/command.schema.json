@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NCommandProps",
+  "description": "Neuron command palette component for searchable action menus and command interfaces. Provides keyboard-navigable item selection with type-ahead filtering.",
+  "type": "object",
+  "properties": {
+    "placeholder": {
+      "type": "string",
+      "description": "Placeholder text displayed in the search input field."
+    },
+    "items": {
+      "type": "array",
+      "description": "List of command items available for selection.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "description": "Display label shown for the command item."
+          },
+          "value": {
+            "type": "string",
+            "description": "Unique value identifier for the command item."
+          }
+        },
+        "required": ["label", "value"],
+        "additionalProperties": false
+      }
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names to apply."
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

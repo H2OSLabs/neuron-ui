@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NSidebarProps",
+  "description": "Neuron sidebar component for application-level side navigation. Supports collapsible state with configurable widths.",
+  "type": "object",
+  "properties": {
+    "collapsed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the sidebar is in collapsed (narrow) state."
+    },
+    "width": {
+      "type": "string",
+      "default": "280px",
+      "description": "Width of the sidebar in expanded state (CSS value)."
+    },
+    "collapsedWidth": {
+      "type": "string",
+      "default": "64px",
+      "description": "Width of the sidebar in collapsed state (CSS value)."
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names to apply."
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

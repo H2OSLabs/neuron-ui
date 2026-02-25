@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NMenubarProps",
+  "description": "Neuron menubar component for application-level horizontal menu navigation. Each menu contains a list of selectable items, similar to desktop application menus.",
+  "type": "object",
+  "properties": {
+    "menus": {
+      "type": "array",
+      "description": "List of top-level menus in the menubar.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "description": "Display label for the top-level menu trigger."
+          },
+          "items": {
+            "type": "array",
+            "description": "List of menu items within this menu.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "description": "Display label for the menu item."
+                }
+              },
+              "required": ["label"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": ["label", "items"],
+        "additionalProperties": false
+      }
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names to apply."
+    }
+  },
+  "required": ["menus"],
+  "additionalProperties": false
+}

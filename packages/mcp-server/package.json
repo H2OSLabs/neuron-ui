@@ -1,0 +1,33 @@
+{
+  "name": "@neuron-ui/mcp-server",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "neuron-mcp": "./dist/bin/neuron-mcp.js"
+  },
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts src/bin/neuron-mcp.ts --format esm --dts",
+    "dev": "tsup --watch",
+    "lint": "eslint src/",
+    "test": "vitest run",
+    "start": "node dist/bin/neuron-mcp.js"
+  },
+  "dependencies": {
+    "@neuron-ui/metadata": "workspace:*",
+    "@neuron-ui/runtime": "workspace:*",
+    "@neuron-ui/generator": "workspace:*",
+    "@neuron-ui/codegen": "workspace:*",
+    "@neuron-ui/tokens": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.4.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

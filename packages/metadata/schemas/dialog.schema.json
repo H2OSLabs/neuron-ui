@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NDialogProps",
+  "description": "Neuron dialog component for modal content overlay. Displays a centered dialog with title, optional description, and child content.",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Title text displayed in the dialog header."
+    },
+    "description": {
+      "type": "string",
+      "description": "Description text displayed below the title."
+    },
+    "open": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the dialog is open (controlled mode)."
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names to apply."
+    }
+  },
+  "required": ["title"],
+  "additionalProperties": false
+}

@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "paths": {
+      "@neuron-ui/components/*": ["./packages/components/*"],
+      "@/*": ["./packages/components/src/*"]
+    }
+  },
+  "include": ["packages/*/src"],
+  "exclude": ["node_modules", "dist"]
+}

@@ -1,0 +1,29 @@
+{
+  "name": "@neuron-ui/metadata",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./builder-registry/component-registry.json": "./builder-registry/component-registry.json",
+    "./builder-registry/editor-types.json": "./builder-registry/editor-types.json",
+    "./page-schema/page.schema.json": "./page-schema/page.schema.json",
+    "./page-schema/examples/crud-page.json": "./page-schema/examples/crud-page.json",
+    "./page-schema/examples/dashboard-page.json": "./page-schema/examples/dashboard-page.json",
+    "./page-schema/examples/detail-page.json": "./page-schema/examples/detail-page.json"
+  },
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint src/",
+    "test": "vitest run",
+    "generate": "tsx scripts/generate-manifest.ts"
+  },
+  "dependencies": {
+    "@neuron-ui/components": "workspace:*",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

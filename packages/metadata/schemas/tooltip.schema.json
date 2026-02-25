@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NTooltipProps",
+  "description": "Neuron tooltip component for displaying contextual information on hover. Supports positioning on any side of the trigger element.",
+  "type": "object",
+  "properties": {
+    "content": {
+      "type": "string",
+      "description": "Text content displayed inside the tooltip popup."
+    },
+    "side": {
+      "type": "string",
+      "enum": ["top", "right", "bottom", "left"],
+      "default": "top",
+      "description": "Preferred side of the trigger element where the tooltip appears."
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names to apply."
+    }
+  },
+  "required": ["content"],
+  "additionalProperties": false
+}

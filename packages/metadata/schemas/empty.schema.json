@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NEmptyProps",
+  "description": "Props for the NEmpty component. A placeholder display for empty states, showing a title, description, and optional action button.",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "The heading text for the empty state"
+    },
+    "description": {
+      "type": "string",
+      "description": "The descriptive text explaining the empty state"
+    },
+    "actionLabel": {
+      "type": "string",
+      "description": "Label for the optional call-to-action button"
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names for custom styling"
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

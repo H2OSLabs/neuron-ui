@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NDrawerProps",
+  "description": "Neuron drawer component for bottom sheet panels. Slides up from the bottom of the screen, typically used on mobile or for contextual actions.",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Title text displayed in the drawer header."
+    },
+    "open": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the drawer is open (controlled mode)."
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names to apply."
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

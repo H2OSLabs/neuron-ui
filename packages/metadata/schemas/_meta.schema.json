@@ -1,0 +1,140 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NeuronComponentSchemaFormat",
+  "description": "Meta-schema that describes the expected format of neuron-ui component schema files. Use this to validate that each *.schema.json conforms to the project's conventions.",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "const": "http://json-schema.org/draft-07/schema#",
+      "description": "Must reference JSON Schema draft-07."
+    },
+    "title": {
+      "type": "string",
+      "pattern": "^N[A-Z][A-Za-z]+Props$",
+      "description": "Component props interface name. Must follow the pattern N<ComponentName>Props (e.g. NButtonProps, NCardProps)."
+    },
+    "description": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Human-readable description of the component and its purpose. Should be sufficiently detailed (at least 10 characters)."
+    },
+    "type": {
+      "type": "string",
+      "const": "object",
+      "description": "Root type must always be 'object' since component props are object types."
+    },
+    "properties": {
+      "type": "object",
+      "description": "Map of prop names to their JSON Schema definitions. Each property must have a type and description.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "JSON Schema type of the property.",
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": ["string", "boolean", "number", "integer", "array", "object"]
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": ["string", "boolean", "number", "integer", "array", "object", "null"]
+                }
+              }
+            ]
+          },
+          "oneOf": {
+            "type": "array",
+            "description": "Alternative: use oneOf instead of type for union types.",
+            "items": {
+              "type": "object"
+            }
+          },
+          "description": {
+            "type": "string",
+            "minLength": 5,
+            "description": "Human-readable description of what this prop does."
+          },
+          "enum": {
+            "type": "array",
+            "description": "Allowed values for string enum props."
+          },
+          "default": {
+            "description": "Default value for the prop if not provided."
+          },
+          "items": {
+            "type": "object",
+            "description": "Schema for array item types when type is 'array'."
+          },
+          "properties": {
+            "type": "object",
+            "description": "Nested properties when type is 'object'."
+          },
+          "required": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Required fields for nested object types."
+          },
+          "additionalProperties": {
+            "type": "boolean",
+            "description": "Whether additional properties are allowed in nested objects."
+          },
+          "const": {
+            "description": "Fixed constant value for the property."
+          },
+          "pattern": {
+            "type": "string",
+            "description": "Regex pattern for string validation."
+          },
+          "minLength": {
+            "type": "integer",
+            "description": "Minimum length for string values."
+          },
+          "maxLength": {
+            "type": "integer",
+            "description": "Maximum length for string values."
+          },
+          "minimum": {
+            "type": "number",
+            "description": "Minimum value for numeric types."
+          },
+          "maximum": {
+            "type": "number",
+            "description": "Maximum value for numeric types."
+          },
+          "minItems": {
+            "type": "integer",
+            "description": "Minimum number of items for array types."
+          },
+          "maxItems": {
+            "type": "integer",
+            "description": "Maximum number of items for array types."
+          }
+        },
+        "anyOf": [
+          { "required": ["type", "description"] },
+          { "required": ["oneOf", "description"] }
+        ]
+      }
+    },
+    "required": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of required prop names. Can be an empty array if all props are optional."
+    },
+    "additionalProperties": {
+      "type": "boolean",
+      "const": false,
+      "description": "Must be false — component schemas do not allow arbitrary extra props."
+    }
+  },
+  "required": ["$schema", "title", "description", "type", "properties", "required", "additionalProperties"],
+  "additionalProperties": false
+}

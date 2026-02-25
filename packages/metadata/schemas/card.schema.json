@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NCardProps",
+  "description": "Neuron card component for grouping related content. Supports multiple layout variants including cover images and profile cards.",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Title text displayed in the card header."
+    },
+    "description": {
+      "type": "string",
+      "description": "Description text displayed below the title."
+    },
+    "variant": {
+      "type": "string",
+      "enum": ["default", "cover-left", "cover-top", "profile", "notification"],
+      "default": "default",
+      "description": "Layout variant of the card."
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names to apply."
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

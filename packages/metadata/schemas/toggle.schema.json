@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NToggleProps",
+  "description": "Neuron toggle button component for binary on/off states. Wraps shadcn/ui Toggle with pressed state management.",
+  "type": "object",
+  "properties": {
+    "pressed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the toggle is currently in the pressed (active) state."
+    },
+    "disabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the toggle is disabled and non-interactive."
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names to apply."
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

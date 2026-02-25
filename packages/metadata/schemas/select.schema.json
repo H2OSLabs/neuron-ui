@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NSelectProps",
+  "description": "Props for the NSelect component. A standard dropdown select for choosing a single option from a predefined list.",
+  "type": "object",
+  "properties": {
+    "options": {
+      "type": "array",
+      "description": "List of selectable options",
+      "items": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "description": "The option value used for form submission"
+          },
+          "label": {
+            "type": "string",
+            "description": "The display label shown to the user"
+          }
+        },
+        "required": ["value", "label"],
+        "additionalProperties": false
+      }
+    },
+    "placeholder": {
+      "type": "string",
+      "description": "Placeholder text shown when no option is selected"
+    },
+    "value": {
+      "type": "string",
+      "description": "The currently selected value"
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names for custom styling"
+    }
+  },
+  "required": ["options"],
+  "additionalProperties": false
+}

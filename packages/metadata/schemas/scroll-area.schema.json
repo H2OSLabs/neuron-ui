@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NScrollAreaProps",
+  "description": "Neuron scroll area component for custom-styled scrollable containers. Provides consistent cross-browser scrollbar styling.",
+  "type": "object",
+  "properties": {
+    "orientation": {
+      "type": "string",
+      "enum": ["horizontal", "vertical", "both"],
+      "default": "vertical",
+      "description": "Direction(s) in which the content can scroll."
+    },
+    "maxHeight": {
+      "type": "string",
+      "description": "Maximum height of the scroll area (CSS value, e.g. '400px', '50vh')."
+    },
+    "maxWidth": {
+      "type": "string",
+      "description": "Maximum width of the scroll area (CSS value, e.g. '600px', '100%')."
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names to apply."
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NDropdownMenuProps",
+  "description": "Props for the NDropdownMenu component. A menu triggered by a button click, displaying a list of actions or navigation options.",
+  "type": "object",
+  "properties": {
+    "items": {
+      "type": "array",
+      "description": "List of menu items to display",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "description": "The display text for the menu item"
+          },
+          "onClick": {
+            "type": "string",
+            "description": "The action handler identifier triggered when the item is clicked"
+          },
+          "disabled": {
+            "type": "boolean",
+            "description": "Whether this menu item is disabled and non-interactive"
+          }
+        },
+        "required": ["label"],
+        "additionalProperties": false
+      }
+    },
+    "triggerLabel": {
+      "type": "string",
+      "description": "Text label for the dropdown trigger button"
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names for custom styling"
+    }
+  },
+  "required": ["items"],
+  "additionalProperties": false
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NHoverCardProps",
+  "description": "Props for the NHoverCard component. A popup card that appears when the user hovers over a trigger element, showing additional context.",
+  "type": "object",
+  "properties": {
+    "triggerText": {
+      "type": "string",
+      "description": "The text content of the hover trigger element"
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names for custom styling"
+    }
+  },
+  "required": ["triggerText"],
+  "additionalProperties": false
+}

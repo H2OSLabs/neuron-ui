@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NSheetProps",
+  "description": "Neuron sheet component for slide-out panel overlays. Slides in from any edge of the screen to display supplementary content.",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Title text displayed in the sheet header."
+    },
+    "description": {
+      "type": "string",
+      "description": "Description text displayed below the title."
+    },
+    "side": {
+      "type": "string",
+      "enum": ["left", "right", "top", "bottom"],
+      "default": "right",
+      "description": "Edge of the screen from which the sheet slides in."
+    },
+    "open": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the sheet is open (controlled mode)."
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names to apply."
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

@@ -1,0 +1,148 @@
+{
+  "version": "1.0.0",
+  "page": {
+    "id": "project-library",
+    "name": "Project Library",
+    "description": ".elf Project 管理 — 创建、打开、列表展示、关闭（Tauri Command 驱动）",
+    "route": "/projects"
+  },
+  "dataSources": {
+    "projectList": {
+      "api": "INVOKE list_open_files",
+      "autoFetch": true
+    },
+    "createProject": {
+      "api": "INVOKE create_file",
+      "method": "POST",
+      "body": {
+        "name": "string",
+        "path": "string"
+      }
+    },
+    "closeProject": {
+      "api": "INVOKE close_file",
+      "method": "DELETE",
+      "params": { "fileId": "string" }
+    }
+  },
+  "tree": [
+    {
+      "id": "root",
+      "component": "NResizable",
+      "props": { "direction": "vertical" },
+      "children": [
+        {
+          "id": "header",
+          "component": "NCard",
+          "props": { "variant": "default" },
+          "children": [
+            {
+              "id": "page-title",
+              "component": "NText",
+              "props": { "text": "Project Library", "size": "heading", "weight": "bold" }
+            },
+            {
+              "id": "toolbar",
+              "component": "NResizable",
+              "props": { "direction": "horizontal" },
+              "children": [
+                {
+                  "id": "search-group",
+                  "component": "NInputGroup",
+                  "props": { "icon": "search" },
+                  "children": [
+                    {
+                      "id": "search-input",
+                      "component": "NInput",
+                      "props": { "placeholder": "搜索 Project..." },
+                      "binding": { "dataSource": "projectList", "onChange": "projectList" }
+                    }
+                  ]
+                },
+                {
+                  "id": "create-btn",
+                  "component": "NButton",
+                  "props": { "label": "新建 Project", "variant": "default", "icon": "plus" },
+                  "binding": { "onClick": "openDialog:create-dialog" }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "project-table",
+          "component": "NDataTable",
+          "props": {
+            "columns": [
+              { "key": "name", "label": "名称", "sortable": true },
+              { "key": "file_id", "label": "文件 ID" },
+              { "key": "path", "label": "路径" },
+              { "key": "created_at", "label": "创建时间", "sortable": true }
+            ]
+          },
+          "binding": { "dataSource": "projectList", "field": "items" }
+        },
+        {
+          "id": "empty-state",
+          "component": "NEmpty",
+          "props": {
+            "title": "暂无 Project",
+            "description": "点击上方按钮创建第一个 .elf Project",
+            "actionLabel": "新建 Project"
+          }
+        },
+        {
+          "id": "create-dialog",
+          "component": "NDialog",
+          "props": { "title": "创建新 Project" },
+          "children": [
+            {
+              "id": "create-name-field",
+              "component": "NField",
+              "props": { "label": "名称", "required": true },
+              "children": [
+                {
+                  "id": "create-name-input",
+                  "component": "NInput",
+                  "props": { "placeholder": "Project 名称" },
+                  "binding": { "field": "name" }
+                }
+              ]
+            },
+            {
+              "id": "create-path-field",
+              "component": "NField",
+              "props": { "label": "保存路径", "required": true },
+              "children": [
+                {
+                  "id": "create-path-input",
+                  "component": "NInput",
+                  "props": { "placeholder": "选择 .elf 文件保存路径" },
+                  "binding": { "field": "path" }
+                }
+              ]
+            },
+            {
+              "id": "create-submit",
+              "component": "NButton",
+              "props": { "label": "创建", "variant": "default" },
+              "binding": { "onSubmit": "createProject" }
+            }
+          ]
+        },
+        {
+          "id": "close-confirm",
+          "component": "NAlertDialog",
+          "props": {
+            "title": "确认关闭 Project",
+            "description": "关闭后将停止 Engine Actor，最终状态会持久化到 .elf 文件。",
+            "confirmLabel": "关闭",
+            "cancelLabel": "取消",
+            "destructive": true
+          },
+          "binding": { "onConfirm": "closeProject" }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NTabsProps",
+  "description": "Neuron tabs component for organizing content into switchable panels. Each tab has an associated content area.",
+  "type": "object",
+  "properties": {
+    "tabs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the tab, used as the tab value."
+          },
+          "label": {
+            "type": "string",
+            "description": "Display label for the tab trigger."
+          }
+        },
+        "required": ["id", "label"],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "description": "Array of tab definitions with id and label."
+    },
+    "defaultValue": {
+      "type": "string",
+      "description": "ID of the tab selected by default (uncontrolled mode)."
+    },
+    "value": {
+      "type": "string",
+      "description": "ID of the currently selected tab (controlled mode)."
+    },
+    "className": {
+      "type": "string",
+      "description": "Additional CSS class names to apply."
+    }
+  },
+  "required": ["tabs"],
+  "additionalProperties": false
+}

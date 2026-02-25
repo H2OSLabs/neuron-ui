@@ -1,0 +1,100 @@
+{
+  "version": "1.0.0",
+  "description": "Page Builder 组件注册信息 — 分类、缩略图、默认 props",
+  "groups": [
+    {
+      "label": "核心组件",
+      "category": "display",
+      "components": [
+        { "name": "NText", "icon": "type", "defaultProps": { "text": "文本内容", "size": "body" } },
+        { "name": "NBadge", "icon": "tag", "defaultProps": { "label": "标签", "color": "blue" } },
+        { "name": "NAvatar", "icon": "user-circle", "defaultProps": { "fallback": "U", "size": "md" } },
+        { "name": "NButton", "icon": "mouse-pointer-click", "defaultProps": { "label": "按钮", "variant": "default", "size": "md" } }
+      ]
+    },
+    {
+      "label": "数据展示",
+      "category": "display",
+      "components": [
+        { "name": "NDataTable", "icon": "table", "defaultProps": { "columns": [{ "key": "name", "label": "名称" }], "data": [] } },
+        { "name": "NChart", "icon": "bar-chart-3", "defaultProps": { "type": "bar", "data": [] } },
+        { "name": "NProgress", "icon": "loader", "defaultProps": { "value": 50, "max": 100 } },
+        { "name": "NCalendar", "icon": "calendar", "defaultProps": {} },
+        { "name": "NCarousel", "icon": "gallery-horizontal", "defaultProps": { "items": [] } },
+        { "name": "NAccordion", "icon": "list-collapse", "defaultProps": { "items": [{ "id": "1", "title": "标题", "content": "内容" }] } },
+        { "name": "NHoverCard", "icon": "credit-card", "defaultProps": { "triggerText": "悬停查看" } },
+        { "name": "NPagination", "icon": "arrow-left-right", "defaultProps": { "currentPage": 1, "totalPages": 10 } },
+        { "name": "NSkeleton", "icon": "square-dashed", "defaultProps": { "width": "100%", "height": "40px" } },
+        { "name": "NEmpty", "icon": "inbox", "defaultProps": { "title": "暂无数据" } }
+      ]
+    },
+    {
+      "label": "表单输入",
+      "category": "input",
+      "components": [
+        { "name": "NField", "icon": "form-input", "defaultProps": { "label": "字段名" } },
+        { "name": "NInput", "icon": "text-cursor-input", "defaultProps": { "placeholder": "请输入..." } },
+        { "name": "NTextarea", "icon": "align-left", "defaultProps": { "placeholder": "请输入长文本...", "rows": 3 } },
+        { "name": "NSelect", "icon": "list", "defaultProps": { "placeholder": "请选择", "options": [] } },
+        { "name": "NCombobox", "icon": "search", "defaultProps": { "placeholder": "搜索选择", "options": [] } },
+        { "name": "NCheckbox", "icon": "check-square", "defaultProps": { "label": "选项" } },
+        { "name": "NRadioGroup", "icon": "circle-dot", "defaultProps": { "options": [{ "value": "a", "label": "选项A" }, { "value": "b", "label": "选项B" }] } },
+        { "name": "NSwitch", "icon": "toggle-left", "defaultProps": { "label": "开关" } },
+        { "name": "NDatePicker", "icon": "calendar-days", "defaultProps": { "placeholder": "选择日期" } },
+        { "name": "NSlider", "icon": "sliders-horizontal", "defaultProps": { "min": 0, "max": 100 } },
+        { "name": "NInputOTP", "icon": "key-round", "defaultProps": { "length": 6 } },
+        { "name": "NInputGroup", "icon": "group", "defaultProps": {} }
+      ]
+    },
+    {
+      "label": "容器",
+      "category": "container",
+      "components": [
+        { "name": "NCard", "icon": "square", "defaultProps": { "title": "卡片标题", "variant": "default" } },
+        { "name": "NDialog", "icon": "panel-top", "defaultProps": { "title": "对话框标题" } },
+        { "name": "NAlertDialog", "icon": "alert-triangle", "defaultProps": { "title": "确认", "description": "确定要执行此操作吗？" } },
+        { "name": "NSheet", "icon": "panel-right", "defaultProps": { "title": "面板标题", "side": "right" } },
+        { "name": "NDrawer", "icon": "panel-bottom", "defaultProps": { "title": "抽屉标题" } },
+        { "name": "NTabs", "icon": "layout-list", "defaultProps": { "tabs": [{ "id": "tab1", "label": "标签1" }, { "id": "tab2", "label": "标签2" }] } },
+        { "name": "NScrollArea", "icon": "scroll", "defaultProps": { "maxHeight": "400px" } },
+        { "name": "NCollapsible", "icon": "chevrons-down-up", "defaultProps": { "title": "展开/收起" } },
+        { "name": "NPopover", "icon": "message-square", "defaultProps": { "triggerLabel": "打开" } }
+      ]
+    },
+    {
+      "label": "布局",
+      "category": "layout",
+      "components": [
+        { "name": "NResizable", "icon": "columns-3", "defaultProps": { "direction": "horizontal" } },
+        { "name": "NAspectRatio", "icon": "ratio", "defaultProps": { "ratio": 1.778 } },
+        { "name": "NSeparator", "icon": "minus", "defaultProps": { "orientation": "horizontal" } },
+        { "name": "NToggle", "icon": "toggle-right", "defaultProps": {} },
+        { "name": "NToggleGroup", "icon": "layout-grid", "defaultProps": { "items": [], "type": "single" } },
+        { "name": "NTooltip", "icon": "message-circle", "defaultProps": { "content": "提示文本" } },
+        { "name": "NKbd", "icon": "keyboard", "defaultProps": { "keys": ["Ctrl", "K"] } }
+      ]
+    },
+    {
+      "label": "反馈",
+      "category": "feedback",
+      "components": [
+        { "name": "NToast", "icon": "bell", "defaultProps": { "title": "通知", "variant": "default" } },
+        { "name": "NAlert", "icon": "alert-circle", "defaultProps": { "description": "提示信息", "variant": "info" } },
+        { "name": "NSpinner", "icon": "loader-2", "defaultProps": { "size": "md" } }
+      ]
+    },
+    {
+      "label": "导航",
+      "category": "navigation",
+      "components": [
+        { "name": "NBreadcrumb", "icon": "chevron-right", "defaultProps": { "items": [{ "label": "首页", "href": "/" }, { "label": "当前页" }] } },
+        { "name": "NSidebar", "icon": "panel-left", "defaultProps": { "width": "240px" } },
+        { "name": "NDropdownMenu", "icon": "more-vertical", "defaultProps": { "triggerLabel": "操作", "items": [] } },
+        { "name": "NContextMenu", "icon": "more-horizontal", "defaultProps": { "items": [] } },
+        { "name": "NMenubar", "icon": "menu", "defaultProps": { "menus": [] } },
+        { "name": "NNavigationMenu", "icon": "navigation", "defaultProps": { "items": [] } },
+        { "name": "NCommand", "icon": "terminal", "defaultProps": { "placeholder": "搜索命令..." } }
+      ]
+    }
+  ]
+}
