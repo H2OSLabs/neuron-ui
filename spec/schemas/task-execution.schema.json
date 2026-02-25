@@ -1,0 +1,201 @@
+{
+  "version": "1.0.0",
+  "page": {
+    "id": "task-execution",
+    "name": "Task 执行",
+    "description": "Task 执行详情 — 定义审查、EAVT 事件流、Session 绑定、提交与验证",
+    "route": "/projects/:fileId/tasks/:blockId"
+  },
+  "dataSources": {
+    "taskDetail": {
+      "api": "INVOKE get_block",
+      "autoFetch": true,
+      "params": { "fileId": ":fileId", "blockId": ":blockId" }
+    },
+    "eventHistory": {
+      "api": "INVOKE get_all_events",
+      "autoFetch": true,
+      "params": { "fileId": ":fileId" }
+    },
+    "startTask": {
+      "api": "INVOKE execute_command/task.start",
+      "method": "POST",
+      "body": {
+        "session_id": "string"
+      }
+    },
+    "commitTask": {
+      "api": "INVOKE execute_command/task.commit",
+      "method": "POST"
+    }
+  },
+  "tree": [
+    {
+      "id": "root",
+      "component": "NResizable",
+      "props": { "direction": "vertical" },
+      "children": [
+        {
+          "id": "breadcrumb",
+          "component": "NBreadcrumb",
+          "props": {
+            "items": [
+              { "label": "Projects", "href": "/projects" },
+              { "label": "当前 Project", "href": "/projects/:fileId" },
+              { "label": "Task 详情" }
+            ]
+          }
+        },
+        {
+          "id": "header-row",
+          "component": "NResizable",
+          "props": { "direction": "horizontal" },
+          "children": [
+            {
+              "id": "task-title",
+              "component": "NText",
+              "props": { "size": "heading", "weight": "bold" },
+              "binding": { "dataSource": "taskDetail", "field": "name" }
+            },
+            {
+              "id": "task-status",
+              "component": "NBadge",
+              "props": { "variant": "default" },
+              "binding": { "dataSource": "taskDetail", "field": "status" }
+            },
+            {
+              "id": "start-btn",
+              "component": "NButton",
+              "props": { "label": "开始执行", "variant": "default", "icon": "play" },
+              "binding": { "onClick": "openDialog:start-dialog" }
+            },
+            {
+              "id": "commit-btn",
+              "component": "NButton",
+              "props": { "label": "提交", "variant": "default", "icon": "check" },
+              "binding": { "onClick": "openDialog:commit-dialog" }
+            }
+          ]
+        },
+        {
+          "id": "detail-tabs",
+          "component": "NTabs",
+          "props": {
+            "tabs": [
+              { "id": "definition", "label": "定义" },
+              { "id": "events", "label": "事件流" },
+              { "id": "verification", "label": "验证" }
+            ],
+            "defaultValue": "definition"
+          },
+          "children": [
+            {
+              "id": "definition-card",
+              "component": "NCard",
+              "props": { "title": "Task 定义" },
+              "children": [
+                {
+                  "id": "objective-label",
+                  "component": "NText",
+                  "props": { "text": "任务目标", "size": "body", "weight": "bold" }
+                },
+                {
+                  "id": "objective-val",
+                  "component": "NText",
+                  "props": { "size": "body" },
+                  "binding": { "dataSource": "taskDetail", "field": "objective" }
+                },
+                {
+                  "id": "constraints-label",
+                  "component": "NText",
+                  "props": { "text": "约束条件", "size": "body", "weight": "bold" }
+                },
+                {
+                  "id": "constraints-val",
+                  "component": "NText",
+                  "props": { "size": "body" },
+                  "binding": { "dataSource": "taskDetail", "field": "constraints" }
+                },
+                {
+                  "id": "acceptance-label",
+                  "component": "NText",
+                  "props": { "text": "验收标准", "size": "body", "weight": "bold" }
+                },
+                {
+                  "id": "acceptance-val",
+                  "component": "NText",
+                  "props": { "size": "body" },
+                  "binding": { "dataSource": "taskDetail", "field": "acceptance" }
+                }
+              ]
+            },
+            {
+              "id": "event-table",
+              "component": "NDataTable",
+              "props": {
+                "columns": [
+                  { "key": "attribute", "label": "Attribute (editor/cap)" },
+                  { "key": "entity", "label": "Entity (block_id)" },
+                  { "key": "value", "label": "Value" },
+                  { "key": "timestamp", "label": "Timestamp", "sortable": true }
+                ]
+              },
+              "binding": { "dataSource": "eventHistory", "field": "items" }
+            },
+            {
+              "id": "verify-card",
+              "component": "NCard",
+              "props": { "title": "验证记录" },
+              "children": [
+                {
+                  "id": "verify-status",
+                  "component": "NText",
+                  "props": { "size": "body" },
+                  "binding": { "dataSource": "taskDetail", "field": "verification_status" }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "start-dialog",
+          "component": "NDialog",
+          "props": { "title": "开始执行 Task" },
+          "children": [
+            {
+              "id": "session-field",
+              "component": "NField",
+              "props": { "label": "Session ID", "required": true },
+              "children": [
+                {
+                  "id": "session-input",
+                  "component": "NInput",
+                  "props": { "placeholder": "输入 Session 标识" },
+                  "binding": { "field": "session_id" }
+                }
+              ]
+            },
+            {
+              "id": "start-submit",
+              "component": "NButton",
+              "props": { "label": "开始", "variant": "default" },
+              "binding": { "onSubmit": "startTask" }
+            }
+          ]
+        },
+        {
+          "id": "commit-dialog",
+          "component": "NAlertDialog",
+          "props": {
+            "title": "确认提交 Task",
+            "description": "提交后 Task 执行内容将被冻结，状态变为 submitted，不可再追加修改。确定继续？",
+            "confirmLabel": "确认提交",
+            "cancelLabel": "取消",
+            "destructive": false
+          },
+          "binding": { "onConfirm": "commitTask" }
+        }
+      ]
+    }
+  ]
+}

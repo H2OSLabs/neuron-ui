@@ -1,0 +1,219 @@
+{
+  "version": "1.0.0",
+  "page": {
+    "id": "task-management",
+    "name": "Task 管理",
+    "description": "Project 内 Task 列表 — 创建 Block、定义目标约束、状态筛选",
+    "route": "/projects/:fileId/tasks"
+  },
+  "dataSources": {
+    "taskList": {
+      "api": "INVOKE get_all_blocks",
+      "autoFetch": true,
+      "params": { "fileId": ":fileId" }
+    },
+    "createTask": {
+      "api": "INVOKE execute_command/core.create",
+      "method": "POST",
+      "body": {
+        "name": "string",
+        "block_type": "task",
+        "source": "outline",
+        "metadata": {
+          "task_type": "string",
+          "objective": "string",
+          "constraints": "string[]",
+          "acceptance": "string[]"
+        }
+      }
+    }
+  },
+  "tree": [
+    {
+      "id": "root",
+      "component": "NResizable",
+      "props": { "direction": "vertical" },
+      "children": [
+        {
+          "id": "breadcrumb",
+          "component": "NBreadcrumb",
+          "props": {
+            "items": [
+              { "label": "Projects", "href": "/projects" },
+              { "label": "当前 Project" },
+              { "label": "Tasks" }
+            ]
+          }
+        },
+        {
+          "id": "filters",
+          "component": "NCard",
+          "props": { "variant": "default" },
+          "children": [
+            {
+              "id": "filter-row",
+              "component": "NResizable",
+              "props": { "direction": "horizontal" },
+              "children": [
+                {
+                  "id": "search-group",
+                  "component": "NInputGroup",
+                  "props": { "icon": "search" },
+                  "children": [
+                    {
+                      "id": "search-input",
+                      "component": "NInput",
+                      "props": { "placeholder": "搜索 Task 名称或目标..." },
+                      "binding": { "dataSource": "taskList", "onChange": "taskList" }
+                    }
+                  ]
+                },
+                {
+                  "id": "type-filter",
+                  "component": "NSelect",
+                  "props": {
+                    "placeholder": "Task Type",
+                    "options": [
+                      { "value": "bug-fix", "label": "Bug Fix" },
+                      { "value": "feature", "label": "Feature" },
+                      { "value": "refactor", "label": "Refactor" },
+                      { "value": "experiment", "label": "Experiment" }
+                    ]
+                  }
+                },
+                {
+                  "id": "status-filter",
+                  "component": "NSelect",
+                  "props": {
+                    "placeholder": "状态",
+                    "options": [
+                      { "value": "defined", "label": "Defined" },
+                      { "value": "executing", "label": "Executing" },
+                      { "value": "submitted", "label": "Submitted" },
+                      { "value": "verified", "label": "Verified" },
+                      { "value": "needs_fix", "label": "Needs Fix" },
+                      { "value": "rejected", "label": "Rejected" },
+                      { "value": "archived", "label": "Archived" }
+                    ]
+                  }
+                },
+                {
+                  "id": "create-btn",
+                  "component": "NButton",
+                  "props": { "label": "创建 Task", "variant": "default", "icon": "plus" },
+                  "binding": { "onClick": "openDialog:create-dialog" }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "task-table",
+          "component": "NDataTable",
+          "props": {
+            "columns": [
+              { "key": "name", "label": "名称", "sortable": true },
+              { "key": "task_type", "label": "类型" },
+              { "key": "status", "label": "状态" },
+              { "key": "owner", "label": "Owner" },
+              { "key": "created_at", "label": "创建时间", "sortable": true }
+            ]
+          },
+          "binding": { "dataSource": "taskList", "field": "items" }
+        },
+        {
+          "id": "pagination",
+          "component": "NPagination",
+          "props": { "currentPage": 1, "totalPages": 1 },
+          "binding": { "dataSource": "taskList" }
+        },
+        {
+          "id": "create-dialog",
+          "component": "NDialog",
+          "props": { "title": "创建新 Task" },
+          "children": [
+            {
+              "id": "create-name-field",
+              "component": "NField",
+              "props": { "label": "名称", "required": true },
+              "children": [
+                {
+                  "id": "create-name-input",
+                  "component": "NInput",
+                  "props": { "placeholder": "Task 名称" },
+                  "binding": { "field": "name" }
+                }
+              ]
+            },
+            {
+              "id": "create-type-field",
+              "component": "NField",
+              "props": { "label": "Task Type", "required": true },
+              "children": [
+                {
+                  "id": "create-type-select",
+                  "component": "NSelect",
+                  "props": {
+                    "placeholder": "选择类型",
+                    "options": [
+                      { "value": "bug-fix", "label": "Bug Fix" },
+                      { "value": "feature", "label": "Feature" },
+                      { "value": "refactor", "label": "Refactor" },
+                      { "value": "experiment", "label": "Experiment" }
+                    ]
+                  },
+                  "binding": { "field": "task_type" }
+                }
+              ]
+            },
+            {
+              "id": "create-objective-field",
+              "component": "NField",
+              "props": { "label": "任务目标", "required": true },
+              "children": [
+                {
+                  "id": "create-objective-input",
+                  "component": "NTextarea",
+                  "props": { "placeholder": "描述期望达成的结果" },
+                  "binding": { "field": "objective" }
+                }
+              ]
+            },
+            {
+              "id": "create-constraints-field",
+              "component": "NField",
+              "props": { "label": "约束条件" },
+              "children": [
+                {
+                  "id": "create-constraints-input",
+                  "component": "NTextarea",
+                  "props": { "placeholder": "每行一条约束" },
+                  "binding": { "field": "constraints" }
+                }
+              ]
+            },
+            {
+              "id": "create-acceptance-field",
+              "component": "NField",
+              "props": { "label": "验收标准" },
+              "children": [
+                {
+                  "id": "create-acceptance-input",
+                  "component": "NTextarea",
+                  "props": { "placeholder": "每行一条标准" },
+                  "binding": { "field": "acceptance" }
+                }
+              ]
+            },
+            {
+              "id": "create-submit",
+              "component": "NButton",
+              "props": { "label": "创建", "variant": "default" },
+              "binding": { "onSubmit": "createTask" }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
