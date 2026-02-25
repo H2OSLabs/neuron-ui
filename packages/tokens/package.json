@@ -9,7 +9,7 @@
   },
   "scripts": {
     "generate": "tsx scripts/generate-tokens.ts",
-    "build": "tsc",
+    "build": "tsx scripts/generate-tokens.ts && tsc",
     "lint": "eslint src/",
     "test": "vitest run"
   },
