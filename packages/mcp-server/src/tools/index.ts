@@ -6,6 +6,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { registerMetadataTools } from './metadata/index.js'
 import { registerGenerationTools } from './generation/index.js'
 import { registerCodegenTools } from './codegen/index.js'
+import { registerProjectTools } from './project/index.js'
 
 /**
  * Register all 11 tools on the MCP server:
@@ -25,4 +26,5 @@ export function registerAllTools(server: McpServer) {
   registerMetadataTools(server)
   registerGenerationTools(server)
   registerCodegenTools(server)
+  registerProjectTools(server)
 }

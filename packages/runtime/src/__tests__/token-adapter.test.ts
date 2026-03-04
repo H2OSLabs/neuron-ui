@@ -4,6 +4,7 @@ import {
   resolveSpacingToken,
   resolveRadiusToken,
   resolveToken,
+  resolveQualifiedToken,
 } from '../adapter/token-adapter'
 
 describe('resolveColorToken', () => {
@@ -55,5 +56,27 @@ describe('resolveToken', () => {
 
   it('should return undefined for unknown category', () => {
     expect(resolveToken('unknown' as 'color', 'test')).toBeUndefined()
+  })
+})
+
+describe('resolveQualifiedToken', () => {
+  it('should resolve qualified color token', () => {
+    expect(resolveQualifiedToken('color.blue')).toBe('#BEF1FF')
+  })
+
+  it('should resolve qualified spacing token', () => {
+    expect(resolveQualifiedToken('spacing.md')).toBe('16px')
+  })
+
+  it('should resolve qualified radius token', () => {
+    expect(resolveQualifiedToken('radius.full')).toBe('9999px')
+  })
+
+  it('should return undefined for invalid category', () => {
+    expect(resolveQualifiedToken('font.size')).toBeUndefined()
+  })
+
+  it('should return undefined when no dot separator', () => {
+    expect(resolveQualifiedToken('invalid')).toBeUndefined()
   })
 })

@@ -6,6 +6,7 @@ import type {
   RendererProps,
   ActionSchema,
 } from '../types'
+import type { EventExecutor } from '../events/event-executor'
 import { useActionContext } from './ActionContext'
 
 function RenderElement({
@@ -13,11 +14,15 @@ function RenderElement({
   registry,
   tree,
   fallback: Fallback,
+  eventExecutor,
+  onNodeEvent,
 }: {
   element: UIElement
   registry: ComponentRegistry
   tree: UITree
   fallback?: React.ComponentType<{ element: UIElement }>
+  eventExecutor?: EventExecutor
+  onNodeEvent?: (nodeId: string, eventName: string, params: Record<string, unknown>) => void
 }) {
   const { dispatch } = useActionContext()
 
@@ -35,6 +40,8 @@ function RenderElement({
               registry={registry}
               tree={tree}
               fallback={Fallback}
+              eventExecutor={eventExecutor}
+              onNodeEvent={onNodeEvent}
             />
           )
         })}
@@ -63,11 +70,29 @@ function RenderElement({
         registry={registry}
         tree={tree}
         fallback={Fallback}
+        eventExecutor={eventExecutor}
+        onNodeEvent={onNodeEvent}
       />
     )
   })
 
   const onAction = (action: ActionSchema) => dispatch(action)
+
+  // Build event handlers from Page JSON events metadata
+  const nodeEvents = element.props?.['__events'] as Record<string, unknown> | undefined
+  if (nodeEvents && eventExecutor) {
+    for (const [eventName, eventAction] of Object.entries(nodeEvents)) {
+      const originalHandler = element.props[eventName]
+      element.props[eventName] = async (...args: unknown[]) => {
+        // Call original handler if exists
+        if (typeof originalHandler === 'function') originalHandler(...args)
+        // Execute event action
+        await eventExecutor.execute(eventAction as any, args[0] as Record<string, unknown> ?? {})
+        // Notify callback
+        onNodeEvent?.(element.key, eventName, args[0] as Record<string, unknown> ?? {})
+      }
+    }
+  }
 
   return (
     <Suspense fallback={null}>
@@ -78,7 +103,7 @@ function RenderElement({
   )
 }
 
-export function Renderer({ tree, registry, fallback }: RendererProps) {
+export function Renderer({ tree, registry, fallback, eventExecutor, onNodeEvent }: RendererProps) {
   const rootElement = tree.elements[tree.root]
   if (!rootElement) return null
 
@@ -88,6 +113,8 @@ export function Renderer({ tree, registry, fallback }: RendererProps) {
       registry={registry}
       tree={tree}
       fallback={fallback}
+      eventExecutor={eventExecutor}
+      onNodeEvent={onNodeEvent}
     />
   )
 }

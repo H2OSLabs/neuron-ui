@@ -65,6 +65,10 @@ export interface EditorState {
   pageSchema: PageSchema
   mode: EditorMode
   viewport: PreviewViewport
+  /** Node ID currently open in ComponentEditor */
+  componentEditorNodeId: string | null
+  /** Node ID whose context is active for AI chat */
+  activeChatNodeId: string | null
 }
 
 /** Editor store actions */
@@ -77,6 +81,9 @@ export interface EditorActions {
   moveNode: (nodeId: string, newParentId: string, index: number) => void
   setMode: (mode: EditorMode) => void
   setViewport: (viewport: PreviewViewport) => void
+  openComponentEditor: (nodeId: string) => void
+  closeComponentEditor: () => void
+  setActiveChatContext: (nodeId: string | null) => void
 }
 
 /** Selection store state */

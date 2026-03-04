@@ -162,6 +162,58 @@ export interface CompositionRules {
   globalConstraints: GlobalConstraints
 }
 
+// ---- Event Action Types ----
+
+/** Event action: navigate to a route */
+export interface NavigateAction {
+  action: 'navigate'
+  target: string
+  params?: Record<string, string>
+}
+
+/** Event action: call an API data source */
+export interface CallApiAction {
+  action: 'callApi'
+  target: string
+  merge?: 'params' | 'body'
+  onSuccess?: string
+  onError?: string
+}
+
+/** Event action: refresh a component's data */
+export interface RefreshAction {
+  action: 'refresh'
+  target: string
+}
+
+/** Event action: show a component */
+export interface ShowAction {
+  action: 'show'
+  target: string
+}
+
+/** Event action: hide a component */
+export interface HideAction {
+  action: 'hide'
+  target: string
+}
+
+/** Event action: update page-level shared state */
+export interface UpdateStateAction {
+  action: 'updateState'
+  key: string
+  value: unknown
+}
+
+/** Union of all event action types */
+export type EventAction =
+  | NavigateAction
+  | CallApiAction
+  | RefreshAction
+  | ShowAction
+  | HideAction
+  | UpdateStateAction
+
 // ---- Page Schema Types ----
 
 export interface PageSchemaDataSource {
@@ -197,6 +249,8 @@ export interface PageSchemaBinding {
     dataSource: string
     fieldMap: Record<string, string>
   }
+  /** Field mapping: API field → component field */
+  fieldMap?: Record<string, string>
 }
 
 export interface PageSchemaTreeNode {
@@ -206,6 +260,10 @@ export interface PageSchemaTreeNode {
   component: string
   /** Static props */
   props?: Record<string, unknown>
+  /** DOM attribute for node identification (used by App-UI hover layer) */
+  domAttr?: string
+  /** Event handlers bound to this node */
+  events?: Record<string, EventAction>
   /** Data binding configuration */
   binding?: PageSchemaBinding
   /** Child nodes */
@@ -232,6 +290,39 @@ export interface PageSchema {
   dataSources?: Record<string, PageSchemaDataSource>
   /** Component tree */
   tree: PageSchemaTreeNode[]
+}
+
+// ---- Project Schema Types ----
+
+export interface ProjectNavigationItem {
+  /** Page ID this navigation item links to */
+  pageId: string
+  /** Display label */
+  label: string
+  /** lucide-react icon name */
+  icon?: string
+  /** Nested navigation items */
+  children?: ProjectNavigationItem[]
+}
+
+export interface ProjectNavigation {
+  /** Navigation layout type */
+  type: 'sidebar' | 'header'
+  /** Navigation items */
+  items: ProjectNavigationItem[]
+  /** Logo URL or text */
+  logo?: string
+}
+
+export interface ProjectSchema {
+  /** Schema version */
+  version: string
+  /** Project metadata */
+  project: { id: string; name: string; description?: string }
+  /** Navigation configuration */
+  navigation: ProjectNavigation
+  /** Pages in the project */
+  pages: PageSchema[]
 }
 
 // ---- Validation Types ----

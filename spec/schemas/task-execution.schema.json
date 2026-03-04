@@ -20,9 +20,7 @@
     "startTask": {
       "api": "INVOKE execute_command/task.start",
       "method": "POST",
-      "body": {
-        "session_id": "string"
-      }
+      "body": { "session_id": "string" }
     },
     "commitTask": {
       "api": "INVOKE execute_command/task.commit",
@@ -33,49 +31,76 @@
     {
       "id": "root",
       "component": "NResizable",
-      "props": { "direction": "vertical" },
+      "props": { "direction": "vertical", "className": "p-6 min-h-screen bg-background gap-4" },
       "children": [
         {
-          "id": "breadcrumb",
-          "component": "NBreadcrumb",
-          "props": {
-            "items": [
-              { "label": "Projects", "href": "/projects" },
-              { "label": "当前 Project", "href": "/projects/:fileId" },
-              { "label": "Task 详情" }
-            ]
-          }
-        },
-        {
-          "id": "header-row",
+          "id": "header",
           "component": "NResizable",
-          "props": { "direction": "horizontal" },
+          "props": { "direction": "horizontal", "className": "items-center justify-between" },
           "children": [
             {
-              "id": "task-title",
-              "component": "NText",
-              "props": { "size": "heading", "weight": "bold" },
-              "binding": { "dataSource": "taskDetail", "field": "name" }
+              "id": "left",
+              "component": "NResizable",
+              "props": { "direction": "horizontal", "className": "items-center gap-3" },
+              "children": [
+                {
+                  "id": "breadcrumb",
+                  "component": "NBreadcrumb",
+                  "props": {
+                    "items": [
+                      { "label": "Projects", "href": "/projects" },
+                      { "label": "当前 Project", "href": "/projects/:fileId" },
+                      { "label": "Task 详情" }
+                    ]
+                  }
+                },
+                {
+                  "id": "task-status",
+                  "component": "NBadge",
+                  "props": { "variant": "default" },
+                  "binding": { "dataSource": "taskDetail", "field": "status" }
+                }
+              ]
             },
             {
-              "id": "task-status",
-              "component": "NBadge",
-              "props": { "variant": "default" },
-              "binding": { "dataSource": "taskDetail", "field": "status" }
-            },
-            {
-              "id": "start-btn",
-              "component": "NButton",
-              "props": { "label": "开始执行", "variant": "default", "icon": "play" },
-              "binding": { "onClick": "openDialog:start-dialog" }
-            },
-            {
-              "id": "commit-btn",
-              "component": "NButton",
-              "props": { "label": "提交", "variant": "default", "icon": "check" },
-              "binding": { "onClick": "openDialog:commit-dialog" }
+              "id": "actions",
+              "component": "NResizable",
+              "props": { "direction": "horizontal", "className": "items-center gap-2" },
+              "children": [
+                {
+                  "id": "start-btn",
+                  "component": "NButton",
+                  "domAttr": "start-btn",
+                  "props": { "label": "开始执行", "variant": "outline", "size": "md" },
+                  "binding": { "onClick": "openDialog:start-dialog" },
+                  "events": {
+                    "onClick": { "action": "show", "target": "start-dialog" }
+                  }
+                },
+                {
+                  "id": "commit-btn",
+                  "component": "NButton",
+                  "domAttr": "commit-btn",
+                  "props": { "label": "提交", "variant": "default", "size": "md" },
+                  "binding": { "onClick": "openDialog:commit-dialog" },
+                  "events": {
+                    "onClick": { "action": "show", "target": "commit-dialog" }
+                  }
+                }
+              ]
             }
           ]
+        },
+        {
+          "id": "task-title",
+          "component": "NText",
+          "props": { "size": "subheading", "weight": "bold" },
+          "binding": { "dataSource": "taskDetail", "field": "name" }
+        },
+        {
+          "id": "separator",
+          "component": "NSeparator",
+          "props": { "orientation": "horizontal" }
         },
         {
           "id": "detail-tabs",
@@ -95,52 +120,64 @@
               "props": { "title": "Task 定义" },
               "children": [
                 {
-                  "id": "objective-label",
-                  "component": "NText",
-                  "props": { "text": "任务目标", "size": "body", "weight": "bold" }
-                },
-                {
-                  "id": "objective-val",
-                  "component": "NText",
-                  "props": { "size": "body" },
-                  "binding": { "dataSource": "taskDetail", "field": "objective" }
-                },
-                {
-                  "id": "constraints-label",
-                  "component": "NText",
-                  "props": { "text": "约束条件", "size": "body", "weight": "bold" }
-                },
-                {
-                  "id": "constraints-val",
-                  "component": "NText",
-                  "props": { "size": "body" },
-                  "binding": { "dataSource": "taskDetail", "field": "constraints" }
-                },
-                {
-                  "id": "acceptance-label",
-                  "component": "NText",
-                  "props": { "text": "验收标准", "size": "body", "weight": "bold" }
-                },
-                {
-                  "id": "acceptance-val",
-                  "component": "NText",
-                  "props": { "size": "body" },
-                  "binding": { "dataSource": "taskDetail", "field": "acceptance" }
+                  "id": "def-fields",
+                  "component": "NResizable",
+                  "props": { "direction": "vertical", "className": "gap-3" },
+                  "children": [
+                    {
+                      "id": "objective-label",
+                      "component": "NText",
+                      "props": { "text": "任务目标", "size": "body", "weight": "bold" }
+                    },
+                    {
+                      "id": "objective-val",
+                      "component": "NText",
+                      "props": { "size": "body" },
+                      "binding": { "dataSource": "taskDetail", "field": "objective" }
+                    },
+                    {
+                      "id": "constraints-label",
+                      "component": "NText",
+                      "props": { "text": "约束条件", "size": "body", "weight": "bold" }
+                    },
+                    {
+                      "id": "constraints-val",
+                      "component": "NText",
+                      "props": { "size": "body" },
+                      "binding": { "dataSource": "taskDetail", "field": "constraints" }
+                    },
+                    {
+                      "id": "acceptance-label",
+                      "component": "NText",
+                      "props": { "text": "验收标准", "size": "body", "weight": "bold" }
+                    },
+                    {
+                      "id": "acceptance-val",
+                      "component": "NText",
+                      "props": { "size": "body" },
+                      "binding": { "dataSource": "taskDetail", "field": "acceptance" }
+                    }
+                  ]
                 }
               ]
             },
             {
               "id": "event-table",
               "component": "NDataTable",
+              "domAttr": "event-table",
               "props": {
                 "columns": [
-                  { "key": "attribute", "label": "Attribute (editor/cap)" },
+                  { "key": "attribute", "label": "Attribute" },
                   { "key": "entity", "label": "Entity (block_id)" },
                   { "key": "value", "label": "Value" },
                   { "key": "timestamp", "label": "Timestamp", "sortable": true }
-                ]
+                ],
+                "className": "flex-1"
               },
-              "binding": { "dataSource": "eventHistory", "field": "items" }
+              "binding": { "dataSource": "eventHistory", "field": "items" },
+              "events": {
+                "onSort": { "action": "callApi", "target": "eventHistory", "merge": "params" }
+              }
             },
             {
               "id": "verify-card",

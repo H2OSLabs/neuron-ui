@@ -24,6 +24,14 @@ export {
   loadTokensForPrompt,
 } from './context'
 
+// ---- Component Generator ----
+export { generateComponent, buildComponentGenerationPrompt } from './component-generator'
+export type { ComponentGenerationParams, GenerateComponentResult } from './component-generator'
+
+// ---- Input Parsers ----
+export { parseApiInput, parseStyleInput } from './input-parser'
+export type { ParsedEndpoint, ParsedApiInput, ParsedStyleInput } from './input-parser'
+
 // ---- Types ----
 export type {
   AIProvider,

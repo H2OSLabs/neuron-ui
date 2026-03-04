@@ -8,6 +8,7 @@ import { pageSchemaToUITree, createNeuronRegistry, FRAGMENT_TYPE } from '@neuron
 import type { UITree, ComponentRegistry } from '@neuron-ui/runtime'
 import { useEditorStore } from '../stores/editor-store'
 import { useSelectionStore } from '../stores/selection-store'
+import { NodeHoverToolbar } from './NodeHoverToolbar'
 
 // Singleton registry — created once and reused
 const registry = createNeuronRegistry()
@@ -32,6 +33,8 @@ function EditorNodeWrapper({ elementKey, componentType, children }: EditorNodeWr
   const hoveredNodeId = useSelectionStore((s) => s.hoveredNodeId)
   const select = useSelectionStore((s) => s.select)
   const hover = useSelectionStore((s) => s.hover)
+  const openComponentEditor = useEditorStore((s) => s.openComponentEditor)
+  const setActiveChatContext = useEditorStore((s) => s.setActiveChatContext)
 
   const isSelected = selectedNodeId === elementKey
   const isHovered = hoveredNodeId === elementKey
@@ -60,9 +63,19 @@ function EditorNodeWrapper({ elementKey, componentType, children }: EditorNodeWr
     [hover],
   )
 
+  const handleEdit = useCallback(
+    (nodeId: string) => openComponentEditor(nodeId),
+    [openComponentEditor],
+  )
+
+  const handleChat = useCallback(
+    (nodeId: string) => setActiveChatContext(nodeId),
+    [setActiveChatContext],
+  )
+
   return (
     <div
-      className="editor-node-wrapper"
+      className="editor-node-wrapper relative group"
       data-selected={isSelected ? 'true' : undefined}
       data-hovered={isHovered ? 'true' : undefined}
       data-component-name={componentType}
@@ -71,6 +84,11 @@ function EditorNodeWrapper({ elementKey, componentType, children }: EditorNodeWr
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
+      <NodeHoverToolbar
+        nodeId={elementKey}
+        onEdit={handleEdit}
+        onChat={handleChat}
+      />
       {children}
     </div>
   )

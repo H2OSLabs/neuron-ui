@@ -108,6 +108,45 @@ Output format:
 - Use Token keys for sizes: `"xs"`, `"sm"`, `"md"`, `"lg"`, `"xl"`
 - Use Token keys for radius: `"sm"`, `"md"`, `"lg"`, `"xl"`
 
+### Visual Layout 规则（必须遵守）
+
+#### 1. 页面根容器必须有 className
+
+根节点 NResizable 必须包含页面级样式，否则内容无 padding、无背景、贴边显示：
+
+```json
+{
+  "id": "root",
+  "component": "NResizable",
+  "props": { "direction": "vertical", "className": "p-6 min-h-screen bg-background gap-6" }
+}
+```
+
+#### 2. 模态组件不参与布局流
+
+NDialog、NAlertDialog、NSheet、NDrawer 是覆盖层组件。它们可以出现在 tree 中（用于接收触发事件），但必须放在所有可见内容节点之后，不得影响布局。
+
+- ✅ **正确**：通过 `binding.onClick: "openDialog:dialog-id"` 触发，NDialog 放在 tree 末尾
+- ❌ **错误**：将 NDialog/NAlertDialog 插在 NDataTable 或 NEmpty 之间
+
+#### 3. 常用 className 模式
+
+| 场景 | 组件 | className |
+|------|------|-----------|
+| 页面根容器 | NResizable vertical | `"p-6 min-h-screen bg-background gap-6"` |
+| 页面 Header 行（标题 + 操作按钮） | NResizable horizontal | `"items-center justify-between mb-2"` |
+| 操作按钮组（搜索 + 新建并排） | NResizable horizontal | `"items-center gap-3"` |
+| 统计卡片行（Dashboard） | NResizable horizontal | `"items-stretch gap-4"` |
+| 表格（占满剩余区域） | NDataTable | `"flex-1"` |
+| 表单字段堆叠 | NResizable vertical | `"gap-4"` |
+| 分隔线区域 | NSeparator | （无需 className） |
+
+#### 4. NEmpty 与 NDataTable 互斥显示
+
+编辑器中两者都会显示（无条件判断），因此生成 schema 时：
+- 页面内容区只放 NDataTable
+- NEmpty 的语义通过 NDataTable 的空态 props 表达，而不是添加独立 NEmpty 节点
+
 ## Step 6: Validate
 
 Before returning, verify:
@@ -121,14 +160,45 @@ Before returning, verify:
 ## CRUD Example (condensed)
 
 For a "competition management" CRUD:
-```
-tree:
-  NResizable (page root)
-    NInputGroup (toolbar): NInput(search) + NSelect(filter) + NButton(create)
-    NDataTable: columns mapped from fields, rowActions with NDropdownMenu
-    NDialog (create): NField[] wrapping input components
-    NSheet (edit): NField[] with prefill binding
-    NAlertDialog (delete): confirm text + cancel/delete buttons
+```json
+{
+  "tree": [
+    {
+      "id": "root",
+      "component": "NResizable",
+      "props": { "direction": "vertical", "className": "p-6 min-h-screen bg-background gap-6" },
+      "children": [
+        {
+          "id": "header",
+          "component": "NResizable",
+          "props": { "direction": "horizontal", "className": "items-center justify-between" },
+          "children": [
+            { "id": "title", "component": "NText", "props": { "text": "竞赛管理", "size": "subheading", "weight": "bold" } },
+            {
+              "id": "toolbar",
+              "component": "NResizable",
+              "props": { "direction": "horizontal", "className": "items-center gap-3" },
+              "children": [
+                { "id": "search", "component": "NInput", "props": { "placeholder": "搜索..." } },
+                { "id": "create-btn", "component": "NButton", "props": { "label": "新建竞赛", "variant": "default" }, "binding": { "onClick": "openDialog:create-dialog" } }
+              ]
+            }
+          ]
+        },
+        { "id": "separator", "component": "NSeparator", "props": {} },
+        {
+          "id": "table",
+          "component": "NDataTable",
+          "props": { "columns": [...], "className": "flex-1" },
+          "binding": { "dataSource": "competitionList", "field": "items" }
+        },
+        { "id": "create-dialog", "component": "NDialog", "props": { "title": "新建竞赛" }, "children": [...] },
+        { "id": "edit-sheet", "component": "NSheet", "props": { "title": "编辑竞赛", "side": "right" }, "children": [...] },
+        { "id": "delete-confirm", "component": "NAlertDialog", "props": { "title": "确认删除", "confirmLabel": "删除", "destructive": true }, "binding": { "onConfirm": "deleteCompetition" } }
+      ]
+    }
+  ]
+}
 ```
 
 ## Resources
