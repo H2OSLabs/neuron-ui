@@ -19,6 +19,19 @@ export function getConstraints(preferences?: {
     '6. NDialog 中 NButton 不超过 3 个',
     '7. 每个 dataSources 中定义的数据源必须至少被一个组件的 binding 引用',
     '8. 每个展示数据的组件（NDataTable, NText 等绑定数据的）必须有 binding.dataSource',
+    '',
+    '### Visual Layout 规则（视觉必须遵守）',
+    '9. 页面根容器必须包含 className，提供页面级 padding 和背景:',
+    '   NResizable root: props.className = "p-6 min-h-screen bg-background gap-6"',
+    '10. NDialog / NAlertDialog / NSheet / NDrawer 是覆盖层组件，必须放在所有可见内容节点之后',
+    '    它们不参与 flex 布局流，不能插在 NDataTable / NText / NCard 等可见组件之间',
+    '11. 页面内容区只放 NDataTable，不同时放 NEmpty（编辑器无法条件渲染）',
+    '12. 布局容器 className 规范:',
+    '    - Header 行 (horizontal): "items-center justify-between"',
+    '    - 操作按钮组 (horizontal): "items-center gap-3"',
+    '    - 统计卡片行 (horizontal): "items-stretch gap-4"',
+    '    - NDataTable 占满区域: className = "flex-1"',
+    '    - 表单字段堆叠 (vertical): "gap-4"',
   ]
 
   if (preferences?.pageType && preferences.pageType !== 'auto') {

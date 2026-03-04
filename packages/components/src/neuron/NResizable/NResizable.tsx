@@ -3,8 +3,8 @@ import { cn } from '../../lib/utils'
 import type { NResizableProps } from './NResizable.types'
 
 const directionStyles: Record<string, string> = {
-  horizontal: 'resize-x',
-  vertical: 'resize-y',
+  horizontal: 'flex flex-row items-center gap-4',
+  vertical: 'flex flex-col gap-4',
 }
 
 const NResizable = forwardRef<HTMLDivElement, NResizableProps>(
@@ -23,7 +23,6 @@ const NResizable = forwardRef<HTMLDivElement, NResizableProps>(
         data-neuron-component="NResizable"
         data-neuron-direction={direction}
         className={cn(
-          'overflow-auto rounded-md border',
           directionStyles[direction] || directionStyles.horizontal,
           className,
         )}

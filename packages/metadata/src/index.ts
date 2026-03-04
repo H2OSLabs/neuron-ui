@@ -25,12 +25,24 @@ export type {
   CompositionRule,
   GlobalConstraints,
   CompositionRules,
+  // Event Action types
+  NavigateAction,
+  CallApiAction,
+  RefreshAction,
+  ShowAction,
+  HideAction,
+  UpdateStateAction,
+  EventAction,
   // Page Schema types
   PageSchemaDataSource,
   PageSchemaBinding,
   PageSchemaTreeNode,
   PageSchemaPage,
   PageSchema,
+  // Project Schema types
+  ProjectNavigationItem,
+  ProjectNavigation,
+  ProjectSchema,
   // Validation types
   ValidationError,
   ValidationResult,
@@ -47,6 +59,17 @@ export {
 export {
   validatePageSchema,
 } from './page-schema-validator'
+
+export {
+  validateProjectSchema,
+} from './project-schema-validator'
+
+// ---- Zod Schemas ----
+export {
+  eventActionSchema,
+  pageSchemaBindingSchema,
+  pageSchemaTreeNodeSchema,
+} from './schemas'
 
 // ---- JSON Data (importable as modules) ----
 // These are re-exported for convenience. Consumers can also import the JSON files directly.

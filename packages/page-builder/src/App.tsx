@@ -6,15 +6,24 @@ import { useEffect } from 'react'
 import { Toolbar } from './editor/Toolbar'
 import { Canvas } from './editor/Canvas'
 import { ComponentPanel } from './editor/ComponentPanel'
+import { ComponentTreePanel } from './editor/ComponentTreePanel'
 import { PropertyPanel } from './editor/PropertyPanel'
+import { ComponentEditor } from './editor/ComponentEditor'
+import { PageListPanel } from './editor/PageListPanel'
 import { useEditorStore } from './stores/editor-store'
+import { useProjectStore } from './stores/project-store'
 import { useSelectionStore } from './stores/selection-store'
-import { builtInTemplates } from './templates'
+import { builtInTemplates, builtInProjectTemplates } from './templates'
+import type { ProjectSchema } from '@neuron-ui/metadata'
 
 export function App() {
   const mode = useEditorStore((s) => s.mode)
   const pageSchema = useEditorStore((s) => s.pageSchema)
   const setSchema = useEditorStore((s) => s.setSchema)
+  const componentEditorNodeId = useEditorStore((s) => s.componentEditorNodeId)
+  const isProjectMode = useProjectStore((s) => s.isProjectMode)
+  const projectSchema = useProjectStore((s) => s.projectSchema)
+  const activePageIndex = useProjectStore((s) => s.activePageIndex)
   const leftPanelOpen = true
 
   // Keyboard shortcuts
@@ -60,17 +69,27 @@ export function App() {
 
       {/* Main area */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left: Component Panel (hidden in preview mode) */}
+        {/* Project mode: Page list panel */}
+        {isProjectMode && mode === 'edit' && (
+          <div className="w-44 border-r border-[var(--gray-11)] bg-white overflow-y-auto editor-panel">
+            <PageListPanel />
+          </div>
+        )}
+
+        {/* Left: Component Panel + Component Tree (hidden in preview mode) */}
         {mode === 'edit' && leftPanelOpen && (
-          <div className="w-60 border-r border-[var(--gray-11)] bg-white overflow-y-auto editor-panel">
+          <div className="w-60 border-r border-[var(--gray-11)] bg-white overflow-y-auto editor-panel flex flex-col">
             <ComponentPanel />
+            <div className="border-t border-[var(--gray-11)]">
+              <ComponentTreePanel />
+            </div>
           </div>
         )}
 
         {/* Center: Canvas */}
         <div className="flex-1 flex flex-col overflow-hidden">
-          {isEmpty && mode === 'edit' ? (
-            <TemplatePicker onSelect={setSchema} />
+          {isEmpty && mode === 'edit' && !isProjectMode ? (
+            <TemplatePicker onSelect={setSchema} onSelectProject={useProjectStore.getState().setProjectSchema} />
           ) : (
             <Canvas />
           )}
@@ -84,11 +103,26 @@ export function App() {
         )}
       </div>
 
+      {/* ComponentEditor overlay */}
+      {componentEditorNodeId && <ComponentEditor />}
+
       {/* Status bar */}
       <div className="h-6 flex items-center px-4 border-t border-[var(--gray-11)] bg-white text-xs text-[var(--gray-07)]">
-        <span>{pageSchema.page.name}</span>
-        <span className="mx-2">·</span>
-        <span>{countNodes(pageSchema.tree)} 个组件</span>
+        {isProjectMode && projectSchema ? (
+          <>
+            <span>{projectSchema.project.name}</span>
+            <span className="mx-2">·</span>
+            <span>页面 {activePageIndex + 1}/{projectSchema.pages.length}</span>
+            <span className="mx-2">·</span>
+            <span>{countNodes(pageSchema.tree)} 个组件</span>
+          </>
+        ) : (
+          <>
+            <span>{pageSchema.page.name}</span>
+            <span className="mx-2">·</span>
+            <span>{countNodes(pageSchema.tree)} 个组件</span>
+          </>
+        )}
       </div>
     </div>
   )
@@ -105,7 +139,13 @@ function countNodes(nodes: Array<{ children?: unknown[] }>): number {
   return count
 }
 
-function TemplatePicker({ onSelect }: { onSelect: (schema: import('./types').PageSchema) => void }) {
+function TemplatePicker({
+  onSelect,
+  onSelectProject,
+}: {
+  onSelect: (schema: import('./types').PageSchema) => void
+  onSelectProject: (schema: ProjectSchema) => void
+}) {
   return (
     <div className="flex-1 flex items-center justify-center">
       <div className="max-w-lg w-full p-8">
@@ -143,7 +183,7 @@ function TemplatePicker({ onSelect }: { onSelect: (schema: import('./types').Pag
             </div>
           </button>
 
-          {/* Built-in templates */}
+          {/* Built-in page templates */}
           {builtInTemplates.map((t) => (
             <button
               key={t.id}
@@ -159,6 +199,34 @@ function TemplatePicker({ onSelect }: { onSelect: (schema: import('./types').Pag
             </button>
           ))}
         </div>
+
+        {/* Project templates */}
+        {builtInProjectTemplates.length > 0 && (
+          <>
+            <div className="mt-6 mb-3 flex items-center gap-2">
+              <div className="h-px flex-1 bg-[var(--gray-11)]" />
+              <span className="text-xs" style={{ color: 'var(--gray-07)' }}>多页项目</span>
+              <div className="h-px flex-1 bg-[var(--gray-11)]" />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              {builtInProjectTemplates.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => onSelectProject(t.schema)}
+                  className="p-4 border border-[var(--blue)]/30 rounded-lg hover:border-[var(--blue)] hover:bg-[var(--gray-14)] transition-colors text-left"
+                >
+                  <div className="text-sm font-medium" style={{ color: 'var(--gray-03)' }}>
+                    {t.name}
+                  </div>
+                  <div className="text-xs mt-1" style={{ color: 'var(--gray-07)' }}>
+                    {t.description}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   )

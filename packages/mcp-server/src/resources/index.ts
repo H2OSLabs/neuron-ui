@@ -8,6 +8,7 @@ import { registerTokenResources } from './token-resources.js'
 import { registerSchemaResources } from './schema-resources.js'
 import { registerExampleResources } from './example-resources.js'
 import { registerCatalogResource } from './catalog-resource.js'
+import { registerProjectResources } from './project-resources.js'
 
 /**
  * Register all 12 MCP resources on the server:
@@ -41,4 +42,5 @@ export function registerResources(server: McpServer) {
   registerSchemaResources(server)
   registerExampleResources(server)
   registerCatalogResource(server)
+  registerProjectResources(server)
 }

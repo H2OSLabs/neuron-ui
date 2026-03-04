@@ -51,4 +51,56 @@ describe('adaptBinding', () => {
     const result = adaptBinding({})
     expect(Object.keys(result)).toHaveLength(0)
   })
+
+  it('should adapt onChange to __onChange with data source path', () => {
+    const result = adaptBinding({ onChange: 'list.params.keyword' })
+    expect(result.__onChange).toEqual({ path: '/dataSources/list/params/keyword' })
+  })
+
+  it('should adapt onClick with action:target format', () => {
+    const result = adaptBinding({ onClick: 'openDialog:create' })
+    expect(result.__action).toEqual({
+      name: 'openDialog',
+      params: { target: 'create' },
+    })
+  })
+
+  it('should adapt onClick with navigate action', () => {
+    const result = adaptBinding({ onClick: 'navigate:/users/{id}' })
+    expect(result.__action).toEqual({
+      name: 'navigate',
+      params: { target: '/users/{id}' },
+    })
+  })
+
+  it('should adapt onClick without target (single word)', () => {
+    const result = adaptBinding({ onClick: 'refresh' })
+    expect(result.__action).toEqual({
+      name: 'refresh',
+      params: {},
+    })
+  })
+
+  it('should have onSubmit override onClick when both present', () => {
+    const result = adaptBinding({
+      onClick: 'openDialog:form',
+      onSubmit: 'POST /api/submit',
+    })
+    expect(result.__action).toEqual({
+      name: 'submitForm',
+      params: { api: 'POST /api/submit' },
+    })
+  })
+
+  it('should have onConfirm override earlier actions', () => {
+    const result = adaptBinding({
+      onClick: 'openDialog:form',
+      onSubmit: 'POST /api/submit',
+      onConfirm: 'DELETE /api/item/1',
+    })
+    expect(result.__action).toEqual({
+      name: 'deleteItem',
+      params: { api: 'DELETE /api/item/1', confirm: true },
+    })
+  })
 })

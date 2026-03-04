@@ -106,6 +106,8 @@ export const useEditorStore = create<EditorState & EditorActions>()(
       pageSchema: DEFAULT_SCHEMA,
       mode: 'edit' as EditorMode,
       viewport: 'desktop' as PreviewViewport,
+      componentEditorNodeId: null,
+      activeChatNodeId: null,
 
       // Actions
       setSchema: (schema: PageSchema) => set({ pageSchema: schema }),
@@ -183,6 +185,9 @@ export const useEditorStore = create<EditorState & EditorActions>()(
 
       setMode: (mode: EditorMode) => set({ mode }),
       setViewport: (viewport: PreviewViewport) => set({ viewport }),
+      openComponentEditor: (nodeId: string) => set({ componentEditorNodeId: nodeId }),
+      closeComponentEditor: () => set({ componentEditorNodeId: null }),
+      setActiveChatContext: (nodeId: string | null) => set({ activeChatNodeId: nodeId }),
     }),
     {
       // zundo temporal config: only track pageSchema changes for undo/redo

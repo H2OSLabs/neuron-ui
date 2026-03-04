@@ -32,8 +32,8 @@ type AnyComponent = React.ComponentType<any>
 /** Helper to render a component with generic props, bypassing strict type checks at the boundary */
 function render(Component: AnyComponent, props: Record<string, unknown>, children?: React.ReactNode): React.ReactElement {
   return children !== undefined
-    ? render(Component, props, children)
-    : render(Component, props)
+    ? React.createElement(Component, props, children)
+    : React.createElement(Component, props)
 }
 
 /** Create the default neuron component registry */
@@ -130,6 +130,9 @@ export function createNeuronRegistry(): ComponentRegistry {
       render(NAlertDialog, {
         title: props.title,
         description: props.description,
+        confirmLabel: props.confirmLabel,
+        cancelLabel: props.cancelLabel,
+        destructive: props.destructive,
         open: props.__open,
         onOpenChange: props.__onOpenChange as (open: boolean) => void,
         onConfirm: () => {
@@ -169,7 +172,7 @@ export function createNeuronRegistry(): ComponentRegistry {
 
     NTabs: ({ props, children }: P) =>
       render(NTabs, {
-        tabs: props.items as Array<{ id: string; label: string }>,
+        tabs: (props.tabs ?? props.items) as Array<{ id: string; label: string }>,
         defaultValue: props.defaultValue,
       }, children),
 
@@ -336,9 +339,8 @@ export function createNeuronRegistry(): ComponentRegistry {
 
     NPagination: ({ props }: P) =>
       render(NPagination, {
-        total: props.total,
-        pageSize: props.pageSize,
-        current: props.current,
+        currentPage: props.currentPage ?? props.current ?? 1,
+        totalPages: props.totalPages ?? props.total ?? 1,
       }),
 
     NChart: ({ props }: P) =>

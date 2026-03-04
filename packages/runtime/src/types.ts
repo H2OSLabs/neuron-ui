@@ -148,6 +148,10 @@ export interface RendererProps {
   registry: ComponentRegistry
   /** Fallback for unknown components */
   fallback?: React.ComponentType<{ element: UIElement }>
+  /** Event executor for Page JSON events */
+  eventExecutor?: import('./events/event-executor').EventExecutor
+  /** Callback when a node event fires */
+  onNodeEvent?: (nodeId: string, eventName: string, params: Record<string, unknown>) => void
 }
 
 // ---- NeuronPage Types ----

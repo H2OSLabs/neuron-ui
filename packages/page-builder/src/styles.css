@@ -1,4 +1,5 @@
-@import 'tailwindcss';
+/* Import tokens (includes @import "tailwindcss" + @theme inline + CSS variables) */
+@import "@neuron-ui/tokens/css/globals.css";
 
 /* Editor-specific styles */
 

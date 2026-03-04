@@ -15,6 +15,7 @@ import {
   FileJson,
 } from 'lucide-react'
 import { useEditorStore } from '../stores/editor-store'
+import { useProjectStore } from '../stores/project-store'
 import type { PreviewViewport } from '../types'
 
 export function Toolbar() {
@@ -23,6 +24,8 @@ export function Toolbar() {
   const setMode = useEditorStore((s) => s.setMode)
   const setViewport = useEditorStore((s) => s.setViewport)
   const pageSchema = useEditorStore((s) => s.pageSchema)
+  const isProjectMode = useProjectStore((s) => s.isProjectMode)
+  const projectSchema = useProjectStore((s) => s.projectSchema)
 
   const handleUndo = useCallback(() => {
     useEditorStore.temporal.getState().undo()
@@ -33,15 +36,30 @@ export function Toolbar() {
   }, [])
 
   const handleExportJSON = useCallback(() => {
-    const json = JSON.stringify(pageSchema, null, 2)
-    const blob = new Blob([json], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `${pageSchema.page.id || 'page'}-schema.json`
-    a.click()
-    URL.revokeObjectURL(url)
-  }, [pageSchema])
+    if (isProjectMode) {
+      // Export full project schema
+      const fullSchema = useProjectStore.getState().exportProjectSchema()
+      if (!fullSchema) return
+      const json = JSON.stringify(fullSchema, null, 2)
+      const blob = new Blob([json], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${fullSchema.project.id || 'project'}-schema.json`
+      a.click()
+      URL.revokeObjectURL(url)
+    } else {
+      // Export single page schema
+      const json = JSON.stringify(pageSchema, null, 2)
+      const blob = new Blob([json], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${pageSchema.page.id || 'page'}-schema.json`
+      a.click()
+      URL.revokeObjectURL(url)
+    }
+  }, [isProjectMode, pageSchema])
 
   const handleImportJSON = useCallback(() => {
     const input = document.createElement('input')
@@ -53,7 +71,17 @@ export function Toolbar() {
       const text = await file.text()
       try {
         const schema = JSON.parse(text)
-        useEditorStore.getState().setSchema(schema)
+        // Auto-detect: project schema vs page schema
+        if (schema.project && Array.isArray(schema.pages)) {
+          // Project schema
+          useProjectStore.getState().setProjectSchema(schema)
+        } else {
+          // Page schema — exit project mode if active
+          if (useProjectStore.getState().isProjectMode) {
+            useProjectStore.getState().clearProject()
+          }
+          useEditorStore.getState().setSchema(schema)
+        }
       } catch {
         // Invalid JSON
       }
@@ -79,22 +107,29 @@ export function Toolbar() {
         </ToolbarButton>
       </div>
 
-      {/* Center: Viewport */}
-      <div className="flex items-center gap-1 bg-[var(--gray-13)] rounded-md p-0.5">
-        {viewportButtons.map(({ key, icon, label }) => (
-          <button
-            key={key}
-            onClick={() => setViewport(key)}
-            title={label}
-            className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors ${
-              viewport === key
-                ? 'bg-white text-[var(--gray-02)] shadow-sm'
-                : 'text-[var(--gray-06)] hover:text-[var(--gray-03)]'
-            }`}
-          >
-            {icon}
-          </button>
-        ))}
+      {/* Center: Project name or Viewport */}
+      <div className="flex items-center gap-3">
+        {isProjectMode && projectSchema && (
+          <span className="text-xs font-medium" style={{ color: 'var(--gray-04)' }}>
+            {projectSchema.project.name}
+          </span>
+        )}
+        <div className="flex items-center gap-1 bg-[var(--gray-13)] rounded-md p-0.5">
+          {viewportButtons.map(({ key, icon, label }) => (
+            <button
+              key={key}
+              onClick={() => setViewport(key)}
+              title={label}
+              className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors ${
+                viewport === key
+                  ? 'bg-white text-[var(--gray-02)] shadow-sm'
+                  : 'text-[var(--gray-06)] hover:text-[var(--gray-03)]'
+              }`}
+            >
+              {icon}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Right: Mode + Export */}

@@ -32,84 +32,87 @@
     {
       "id": "root",
       "component": "NResizable",
-      "props": { "direction": "vertical" },
+      "props": { "direction": "vertical", "className": "p-6 min-h-screen bg-background gap-4" },
       "children": [
         {
-          "id": "breadcrumb",
-          "component": "NBreadcrumb",
-          "props": {
-            "items": [
-              { "label": "Projects", "href": "/projects" },
-              { "label": "当前 Project" },
-              { "label": "Tasks" }
-            ]
-          }
-        },
-        {
-          "id": "filters",
-          "component": "NCard",
-          "props": { "variant": "default" },
+          "id": "header",
+          "component": "NResizable",
+          "props": { "direction": "horizontal", "className": "items-center justify-between" },
           "children": [
             {
-              "id": "filter-row",
-              "component": "NResizable",
-              "props": { "direction": "horizontal" },
-              "children": [
-                {
-                  "id": "search-group",
-                  "component": "NInputGroup",
-                  "props": { "icon": "search" },
-                  "children": [
-                    {
-                      "id": "search-input",
-                      "component": "NInput",
-                      "props": { "placeholder": "搜索 Task 名称或目标..." },
-                      "binding": { "dataSource": "taskList", "onChange": "taskList" }
-                    }
-                  ]
-                },
-                {
-                  "id": "type-filter",
-                  "component": "NSelect",
-                  "props": {
-                    "placeholder": "Task Type",
-                    "options": [
-                      { "value": "bug-fix", "label": "Bug Fix" },
-                      { "value": "feature", "label": "Feature" },
-                      { "value": "refactor", "label": "Refactor" },
-                      { "value": "experiment", "label": "Experiment" }
-                    ]
-                  }
-                },
-                {
-                  "id": "status-filter",
-                  "component": "NSelect",
-                  "props": {
-                    "placeholder": "状态",
-                    "options": [
-                      { "value": "defined", "label": "Defined" },
-                      { "value": "executing", "label": "Executing" },
-                      { "value": "submitted", "label": "Submitted" },
-                      { "value": "verified", "label": "Verified" },
-                      { "value": "needs_fix", "label": "Needs Fix" },
-                      { "value": "rejected", "label": "Rejected" },
-                      { "value": "archived", "label": "Archived" }
-                    ]
-                  }
-                },
-                {
-                  "id": "create-btn",
-                  "component": "NButton",
-                  "props": { "label": "创建 Task", "variant": "default", "icon": "plus" },
-                  "binding": { "onClick": "openDialog:create-dialog" }
-                }
-              ]
+              "id": "breadcrumb",
+              "component": "NBreadcrumb",
+              "props": {
+                "items": [
+                  { "label": "Projects", "href": "/projects" },
+                  { "label": "当前 Project" },
+                  { "label": "Tasks" }
+                ]
+              }
+            },
+            {
+              "id": "create-btn",
+              "component": "NButton",
+              "domAttr": "create-btn",
+              "props": { "label": "创建 Task", "variant": "default", "size": "md" },
+              "binding": { "onClick": "openDialog:create-dialog" },
+              "events": {
+                "onClick": { "action": "show", "target": "create-dialog" }
+              }
+            }
+          ]
+        },
+        {
+          "id": "separator",
+          "component": "NSeparator",
+          "props": { "orientation": "horizontal" }
+        },
+        {
+          "id": "filter-toolbar",
+          "component": "NResizable",
+          "props": { "direction": "horizontal", "className": "items-center gap-3" },
+          "children": [
+            {
+              "id": "search-input",
+              "component": "NInput",
+              "props": { "placeholder": "搜索 Task 名称或目标...", "className": "flex-1" },
+              "binding": { "dataSource": "taskList", "onChange": "taskList" }
+            },
+            {
+              "id": "type-filter",
+              "component": "NSelect",
+              "props": {
+                "placeholder": "Task Type",
+                "options": [
+                  { "value": "bug-fix", "label": "Bug Fix" },
+                  { "value": "feature", "label": "Feature" },
+                  { "value": "refactor", "label": "Refactor" },
+                  { "value": "experiment", "label": "Experiment" }
+                ]
+              }
+            },
+            {
+              "id": "status-filter",
+              "component": "NSelect",
+              "props": {
+                "placeholder": "状态",
+                "options": [
+                  { "value": "defined", "label": "Defined" },
+                  { "value": "executing", "label": "Executing" },
+                  { "value": "submitted", "label": "Submitted" },
+                  { "value": "verified", "label": "Verified" },
+                  { "value": "needs_fix", "label": "Needs Fix" },
+                  { "value": "rejected", "label": "Rejected" },
+                  { "value": "archived", "label": "Archived" }
+                ]
+              }
             }
           ]
         },
         {
           "id": "task-table",
           "component": "NDataTable",
+          "domAttr": "task-table",
           "props": {
             "columns": [
               { "key": "name", "label": "名称", "sortable": true },
@@ -117,9 +120,13 @@
               { "key": "status", "label": "状态" },
               { "key": "owner", "label": "Owner" },
               { "key": "created_at", "label": "创建时间", "sortable": true }
-            ]
+            ],
+            "className": "flex-1"
           },
-          "binding": { "dataSource": "taskList", "field": "items" }
+          "binding": { "dataSource": "taskList", "field": "items" },
+          "events": {
+            "onRowClick": { "action": "navigate", "target": "/projects/:fileId/tasks/:id" }
+          }
         },
         {
           "id": "pagination",
@@ -208,8 +215,12 @@
             {
               "id": "create-submit",
               "component": "NButton",
+              "domAttr": "create-submit",
               "props": { "label": "创建", "variant": "default" },
-              "binding": { "onSubmit": "createTask" }
+              "binding": { "onSubmit": "createTask" },
+              "events": {
+                "onSubmit": { "action": "callApi", "target": "createTask", "onSuccess": "refresh:task-table" }
+              }
             }
           ]
         }

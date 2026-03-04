@@ -40,5 +40,27 @@ export interface GeneratedFile {
   /** File content (formatted source code) */
   content: string
   /** File type category */
-  type: 'page' | 'hooks' | 'types' | 'component'
+  type: 'page' | 'hooks' | 'types' | 'component' | 'router' | 'layout' | 'app'
+}
+
+/** Options for the `project` command */
+export interface ProjectGenerateOptions {
+  /** Path to the Project Schema JSON file */
+  schemaPath: string
+  /** Output directory for generated files */
+  outDir: string
+  /** Hooks style: plain hooks, SWR, or React Query */
+  style: HooksStyle
+  /** API client library: fetch, axios, or ky */
+  apiClient: ApiClientStyle
+  /** If true, print generated files to stdout without writing */
+  dryRun?: boolean
+}
+
+/** Result of the project code generation process */
+export interface ProjectGenerateResult {
+  /** List of generated files */
+  files: GeneratedFile[]
+  /** Whether this was a dry run */
+  dryRun: boolean
 }

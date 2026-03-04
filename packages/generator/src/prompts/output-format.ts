@@ -26,8 +26,18 @@ export function getOutputFormat(): string {
     {
       "id": "root",
       "component": "NResizable",
-      "props": { "direction": "vertical" },
-      "children": [...]
+      "props": { "direction": "vertical", "className": "p-6 min-h-screen bg-background gap-6" },
+      "children": [
+        {
+          "id": "header",
+          "component": "NResizable",
+          "props": { "direction": "horizontal", "className": "items-center justify-between" },
+          "children": [...]
+        },
+        { "id": "separator", "component": "NSeparator", "props": {} },
+        { "id": "table", "component": "NDataTable", "props": { "columns": [...], "className": "flex-1" }, "binding": {...} },
+        { "id": "create-dialog", "component": "NDialog", "props": { "title": "..." }, "children": [...] }
+      ]
     }
   ]
 }

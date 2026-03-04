@@ -62,6 +62,12 @@ export function autoFix(schema: PageSchema, errors: ValidationError[]): AutoFixR
     }
   }
 
+  // Inject layout defaults — always run regardless of errors
+  const layoutFixes = injectLayoutDefaults(fixed.tree, true)
+  if (layoutFixes > 0) {
+    fixesApplied.push(`Injected layout defaults for ${layoutFixes} container nodes`)
+  }
+
   return { schema: fixed, fixesApplied }
 }
 
@@ -93,6 +99,51 @@ function fixDuplicateIds(nodes: PageSchemaTreeNode[]): void {
   }
 
   walk(nodes)
+}
+
+// Overlay components that should never participate in the visible layout flow.
+// They are moved to the end of their parent's children list.
+const OVERLAY_COMPONENTS = new Set(['NDialog', 'NAlertDialog', 'NSheet', 'NDrawer'])
+
+// Default className injected for the page root container when missing.
+const ROOT_PAGE_CLASS = 'p-6 min-h-screen bg-background gap-6'
+
+/**
+ * Inject sensible layout defaults for container nodes that lack className.
+ * Only adds className when the prop is absent — never overwrites existing values.
+ *
+ * Pass `isRoot = true` for the top-level call so the first NResizable gets
+ * the full page-level className.
+ */
+function injectLayoutDefaults(nodes: PageSchemaTreeNode[], isRoot: boolean): number {
+  let count = 0
+
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i]
+
+    if (node.component === 'NResizable') {
+      if (isRoot && !node.props?.['className']) {
+        node.props = { ...node.props, className: ROOT_PAGE_CLASS }
+        count++
+      }
+
+      // Sort children: visible nodes first, overlay components last
+      if (node.children && node.children.length > 0) {
+        const visible = node.children.filter(c => !OVERLAY_COMPONENTS.has(c.component))
+        const overlays = node.children.filter(c => OVERLAY_COMPONENTS.has(c.component))
+        if (overlays.length > 0) {
+          node.children = [...visible, ...overlays]
+          count++
+        }
+
+        count += injectLayoutDefaults(node.children, false)
+      }
+    } else if (node.children) {
+      count += injectLayoutDefaults(node.children, false)
+    }
+  }
+
+  return count
 }
 
 function fixRawColors(nodes: PageSchemaTreeNode[]): number {

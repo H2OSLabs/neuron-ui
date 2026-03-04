@@ -55,6 +55,10 @@ export {
   resolveQualifiedToken,
 } from './adapter/token-adapter'
 
+// ---- Events ----
+export { createEventExecutor } from './events/event-executor'
+export type { EventExecutor, EventExecutorContext } from './events/event-executor'
+
 // ---- Renderer ----
 export { Renderer } from './renderer/Renderer'
 export { DataContextProvider, useDataContext } from './renderer/DataContext'
